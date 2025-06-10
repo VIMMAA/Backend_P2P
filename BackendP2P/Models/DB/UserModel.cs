@@ -10,7 +10,6 @@ public class UserModel : Entity
     public required string LastName { get; set; }
     public required DateOnly Birthday { get; set; }
     public required string Email { get; set; }
-    public required Role Role { get; set; }
 
     public required string Password { get; set; }
 

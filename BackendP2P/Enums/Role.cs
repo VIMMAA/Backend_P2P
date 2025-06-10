@@ -4,5 +4,5 @@ public enum Role
 {
     Student,
     Teacher,
-    Dean
+    Owner
 }

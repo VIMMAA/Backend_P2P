@@ -52,7 +52,6 @@ public class UserController : ControllerBase
 
         UserModel user = new()
         {
-            Role = Role.Student,
             Id = Guid.NewGuid(),
             FirstName = userRegisterModel.FirstName,
             MiddleName = userRegisterModel.MiddleName,
@@ -101,7 +100,7 @@ public class UserController : ControllerBase
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-            return Ok(new TokenResponseModel { Token = tokenString , Role = Role.Student }); 
+            return Ok(new TokenResponseModel { Token = tokenString  }); 
         }
         catch (Exception e)
         {
@@ -110,95 +109,94 @@ public class UserController : ControllerBase
         }
     }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpPost("register/{linkId}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> RegisterTeacher(Guid linkId, [FromBody] UserRegisterModel userRegisterModel)
-        {
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        // [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        // [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        // [HttpPost("register/{linkId}")]
+        // [AllowAnonymous]
+        // public async Task<IActionResult> RegisterTeacher(Guid linkId, [FromBody] UserRegisterModel userRegisterModel)
+        // {
 
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { status = "error", message = "Invalid arguments" });
-            }
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest(new { status = "error", message = "Invalid arguments" });
+        //     }
 
-            if (!await _context.InvitationLinks.AnyAsync(link => link.Id == linkId))
-            {
-                return BadRequest(new { status = "error", message = "Invalid invitation link" });
-            }
+        //     if (!await _context.InvitationLinks.AnyAsync(link => link.Id == linkId))
+        //     {
+        //         return BadRequest(new { status = "error", message = "Invalid invitation link" });
+        //     }
 
-            var link = await _context.InvitationLinks.FirstOrDefaultAsync(link => link.Id == linkId);
+        //     var link = await _context.InvitationLinks.FirstOrDefaultAsync(link => link.Id == linkId);
 
             
-            UserModel user = new()
-            {
-                Role = link.Role,
-                Id = Guid.NewGuid(),
-                FirstName = userRegisterModel.FirstName,
-                MiddleName = userRegisterModel.MiddleName,
-                LastName = userRegisterModel.LastName,
-                Birthday = userRegisterModel.Birthday,
-                Email = userRegisterModel.Email,
-                Password = userRegisterModel.Password,
-            };
+        //     UserModel user = new()
+        //     {
+        //         Role = link.Role,
+        //         Id = Guid.NewGuid(),
+        //         FirstName = userRegisterModel.FirstName,
+        //         MiddleName = userRegisterModel.MiddleName,
+        //         LastName = userRegisterModel.LastName,
+        //         Birthday = userRegisterModel.Birthday,
+        //         Email = userRegisterModel.Email,
+        //         Password = userRegisterModel.Password,
+        //     };
 
 
-            bool isEmailExist = _context.Users.Any(d => d.Email == user.Email);
+        //     bool isEmailExist = _context.Users.Any(d => d.Email == user.Email);
 
-            if (isEmailExist)
-            {
-                return BadRequest(new { status = "error", message = "Email is already exists" });
-            }
+        //     if (isEmailExist)
+        //     {
+        //         return BadRequest(new { status = "error", message = "Email is already exists" });
+        //     }
 
-            try
-            {
-                await _context.Users.AddAsync(user);
+        //     try
+        //     {
+        //         await _context.Users.AddAsync(user);
 
-                int r = await _context.SaveChangesAsync();
+        //         int r = await _context.SaveChangesAsync();
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var jwtKey = "G7@!f4#Zq8&lN9^kP2*eR1$hW3%tX6@zB5";
+        //         var tokenHandler = new JwtSecurityTokenHandler();
+        //         var jwtKey = "G7@!f4#Zq8&lN9^kP2*eR1$hW3%tX6@zB5";
 
-                if (string.IsNullOrEmpty(jwtKey))
-                {
-                    throw new InvalidOperationException("JWT_KEY не установлен в переменных окружения.");
-                }
+        //         if (string.IsNullOrEmpty(jwtKey))
+        //         {
+        //             throw new InvalidOperationException("JWT_KEY не установлен в переменных окружения.");
+        //         }
 
-                var key = Encoding.ASCII.GetBytes(jwtKey);
+        //         var key = Encoding.ASCII.GetBytes(jwtKey);
 
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new Claim[]
-                    {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, user.Email),
+        //         var tokenDescriptor = new SecurityTokenDescriptor
+        //         {
+        //             Subject = new ClaimsIdentity(new Claim[]
+        //             {
+        //             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        //             new Claim(ClaimTypes.NameIdentifier, user.Email),
 
-                    }),
-                    Expires = DateTime.UtcNow.AddHours(1),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-                };
+        //             }),
+        //             Expires = DateTime.UtcNow.AddHours(1),
+        //             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        //         };
 
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                var tokenString = tokenHandler.WriteToken(token);
+        //         var token = tokenHandler.CreateToken(tokenDescriptor);
+        //         var tokenString = tokenHandler.WriteToken(token);
 
-                return Ok(new { Token = tokenString, Role = link.Role });
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine($"Error registering user: {e}");
-                return StatusCode(500, new { Status = "error", Message = e.Message });
-            }
-        }
+        //         return Ok(new { Token = tokenString, Role = link.Role });
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         Console.Error.WriteLine($"Error registering user: {e}");
+        //         return StatusCode(500, new { Status = "error", Message = e.Message });
+        //     }
+        // }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status400BadRequest)]
 [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
   [HttpPost("login")]
-    [AllowAnonymous]
 
     public async Task<IActionResult> LoginUser([FromBody] UserLoginModel UserLogin)
     {
@@ -247,7 +245,7 @@ public class UserController : ControllerBase
         var TokenString = tokenHandler.WriteToken(Token);
     try 
     {
-        return Ok(new TokenResponseModel { Token = TokenString , Role = user.Role }); 
+        return Ok(new TokenResponseModel { Token = TokenString  }); 
     }
 
     catch(Exception e)
@@ -283,10 +281,10 @@ public class UserController : ControllerBase
 
     }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
       [HttpGet("profile")]
            [Authorize] 
 
@@ -331,7 +329,7 @@ public class UserController : ControllerBase
     }
 }
 
-  [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

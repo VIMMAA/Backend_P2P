@@ -6,9 +6,6 @@ public class TokenResponseModel {
     [StringLength(int.MaxValue, MinimumLength = 1)]
     public string Token {get; set;}
 
-    public Role Role {get; set;}
-
-
 
 }
 

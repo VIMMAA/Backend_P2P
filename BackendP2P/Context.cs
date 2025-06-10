@@ -1,13 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
-
+using Api.Models;
 public class ApplicationContext : DbContext
 {
     public DbSet<UserModel> Users { get; set; }
-    // public DbSet<ApplicationModel> Applications { get; set; }
-    // public DbSet<AttachedFile> Files {get;set;}
+    public DbSet<UserCorse> UsersCorses { get; set; }
+    public DbSet<CourseModel> Courses {get;set;}
     // public DbSet<Lesson> Lessons { get; set; }
-     public DbSet<InvitationLink> InvitationLinks { get; set; }
 
 
     public bool TestConnection()
