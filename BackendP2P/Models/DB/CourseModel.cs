@@ -21,8 +21,6 @@ public class CourseModel : Entity
 
     public required DateTime CreateTime { get; set; }
 
-
-    public virtual ICollection<UserModel> Users { get; set; } = new List<UserModel>();
     public virtual ICollection<TaskModel> Tasks { get; set; } = new List<TaskModel>();
 
 }

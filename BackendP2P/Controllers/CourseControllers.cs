@@ -33,6 +33,12 @@ public class CourseController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Создать курс
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+
     [HttpPost]
     [Authorize]
     public async Task<ActionResult<CourseModel>> CreateCourse(
@@ -82,16 +88,6 @@ public class CourseController : ControllerBase
 
             var userId = Guid.Parse(userIdClaim.Value);
 
-            var user = await _context.Users
-             .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-            {
-                return NotFound(new { message = "Пользователь не найден" });
-            }
-
-            course.Users.Add(user);
-
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
@@ -120,6 +116,7 @@ public class CourseController : ControllerBase
         }
     }
 
+
     [HttpGet("{id}")]
     [Authorize]
     public async Task<ActionResult<CourseModel>> GetCourse(Guid id)
@@ -142,7 +139,6 @@ public class CourseController : ControllerBase
             return NotFound();
         }
         var course = await _context.Courses
-            .Include(c => c.Users)
             .Include(c => c.Tasks)
             .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -155,6 +151,11 @@ public class CourseController : ControllerBase
         return Ok(course);
     }
 
+    /// <summary>
+    /// Узнать роль на курсе
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
 
     [HttpGet("{id}/Role")]
     [Authorize]
@@ -185,64 +186,108 @@ public class CourseController : ControllerBase
         return Ok(role);
     }
 
+    /// <summary>
+    /// Зайти на курс через код
+    /// </summary>
+    /// <param name="code"></param>
+    /// <returns></returns>
+
     [HttpPost("register")]
     [Authorize]
     public async Task<IActionResult> JoinCourseByCode(string code)
-{
-    // Получаем ID пользователя из токена
-    var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-    
-    if (userIdClaim == null)
     {
-        return BadRequest(new { message = "Недействительный токен" });
+        // Получаем ID пользователя из токена
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return BadRequest(new { message = "Недействительный токен" });
+        }
+
+        if (!Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return BadRequest(new { message = "Некорректный ID пользователя" });
+        }
+
+       
+        var course = await _context.Courses
+            .FirstOrDefaultAsync(c => c.StudentsCode == code || c.TeachersCode == code);
+
+        if (course == null)
+        {
+            return NotFound(new { message = "Курс с таким кодом не найден" });
+        }
+
+        var userAlreadyInCourse = await _context.UsersCorses
+            .AnyAsync(uc => uc.UserId == userId && uc.CourseId == course.Id);
+
+        if (userAlreadyInCourse)
+        {
+            return Conflict(new { message = "Пользователь уже добавлен в этот курс" });
+        }
+
+        var userCourse = new UserCorse
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            CourseId = course.Id,
+            Role = course.StudentsCode == code ? Role.Student : Role.Teacher
+        };
+
+        _context.UsersCorses.Add(userCourse);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Пользователь успешно добавлен в курс", courseId = course.Id });
+
     }
 
-    if (!Guid.TryParse(userIdClaim.Value, out var userId))
+
+    /// <summary>
+    /// Покинуть курс
+    /// </summary>
+    /// <param name="courseId"></param>
+    /// <returns>аыва</returns>
+    /// 
+
+    [HttpPost("leave/{courseId}")]
+    [Authorize]
+    public async Task<IActionResult> LeaveCourse(Guid courseId)
     {
-        return BadRequest(new { message = "Некорректный ID пользователя" });
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized(new { message = "Недействительный токен" });
+        }
+
+        var courseExists = await _context.Courses.AnyAsync(c => c.Id == courseId);
+        if (!courseExists)
+        {
+            return NotFound(new { message = "Курс не найден" });
+        }
+
+        var userCourse = await _context.UsersCorses
+            .FirstOrDefaultAsync(uc => uc.UserId == userId && uc.CourseId == courseId);
+
+        if (userCourse == null)
+        {
+            return BadRequest(new { message = "Пользователь не состоит в этом курсе" });
+        }
+
+        if (userCourse.Role == Role.Owner)
+        {
+            return BadRequest(new
+            {
+                message = "Нельзя покинуть курс, так как вы являетесь владельцем. " +
+                         "Сначала передайте права владельца другому пользователю или удалите курс."
+            });
+        }
+
+        _context.UsersCorses.Remove(userCourse);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Вы успешно покинули курс" });
     }
 
-    var user = await _context.Users
-        .FirstOrDefaultAsync(u => u.Id == userId);
-
-    if (user == null)
-    {
-        return NotFound(new { message = "Пользователь не найден" });
-    }
-
-    var course = await _context.Courses
-        .FirstOrDefaultAsync(c => c.StudentsCode == code || c.TeachersCode == code);
-
-    if (course == null)
-    {
-        return NotFound(new { message = "Курс с таким кодом не найден" });
-    }
-
-    var userAlreadyInCourse = await _context.UsersCorses
-        .AnyAsync(uc => uc.UserId == userId && uc.CourseId == course.Id);
-
-    if (userAlreadyInCourse)
-    {
-        return Conflict(new { message = "Пользователь уже добавлен в этот курс" });
-    }
-
-    var userCourse = new UserCorse
-    {
-        Id = Guid.NewGuid(),
-        UserId = userId,
-        CourseId = course.Id,
-        Role = course.StudentsCode == code ? Role.Student : Role.Teacher
-    };
-
-        course.Users.Add(user);
-
-    _context.UsersCorses.Add(userCourse);
-    await _context.SaveChangesAsync();
-
-    return Ok(new { message = "Пользователь успешно добавлен в курс", courseId = course.Id });
-}
-
-    
     [HttpDelete("{id}")]
     [Authorize]
     public async Task<IActionResult> DeleteCourse(Guid id)
@@ -265,7 +310,6 @@ public class CourseController : ControllerBase
         }
     
         var course = await _context.Courses
-            .Include(c => c.Users)
             .Include(c => c.Tasks)
             .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -274,14 +318,6 @@ public class CourseController : ControllerBase
             return NotFound(new { message = "Курс не найден" });
         }
 
-        // 2. Удаляем все связи пользователей с курсом
-        if (course.Users != null && course.Users.Any())
-        {
-            foreach (var user in course.Users.ToList())
-            {
-                course.Users.Remove(user);
-            }
-        }
 
         // // 3. Удаляем все задачи курса
         // if (course.Tasks != null && course.Tasks.Any())
