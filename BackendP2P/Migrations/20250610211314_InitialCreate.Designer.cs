@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendP2P.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250610185234_FixedCoursesTable_Cl2dfean")]
-    partial class FixedCoursesTable_Cl2dfean
+    [Migration("20250610211314_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

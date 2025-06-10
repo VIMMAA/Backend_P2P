@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BackendP2P.Migrations
 {
     /// <inheritdoc />
-    public partial class FixedCoursesTable_Clean : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,13 +30,30 @@ namespace BackendP2P.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    MiddleName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    Birthday = table.Column<DateOnly>(type: "date", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UsersCorses",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CourseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false)
+                    Role = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -59,30 +76,6 @@ namespace BackendP2P.Migrations
                     table.PrimaryKey("PK_TaskModel", x => x.Id);
                     table.ForeignKey(
                         name: "FK_TaskModel_Courses_CourseModelId",
-                        column: x => x.CourseModelId,
-                        principalTable: "Courses",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    MiddleName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    Birthday = table.Column<DateOnly>(type: "date", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    Password = table.Column<string>(type: "text", nullable: false),
-                    CourseModelId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_Courses_CourseModelId",
                         column: x => x.CourseModelId,
                         principalTable: "Courses",
                         principalColumn: "Id");
@@ -116,11 +109,6 @@ namespace BackendP2P.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_TaskModel_CourseModelId",
                 table: "TaskModel",
-                column: "CourseModelId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_CourseModelId",
-                table: "Users",
                 column: "CourseModelId");
         }
 

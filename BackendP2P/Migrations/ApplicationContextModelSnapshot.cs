@@ -44,7 +44,7 @@ namespace BackendP2P.Migrations
 
                     b.HasIndex("TaskModelId");
 
-                    b.ToTable("CommentModel");
+                    b.ToTable("CommentModel", (string)null);
                 });
 
             modelBuilder.Entity("Api.Models.CourseModel", b =>
@@ -82,7 +82,7 @@ namespace BackendP2P.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("Api.Models.TaskModel", b =>
@@ -112,7 +112,7 @@ namespace BackendP2P.Migrations
 
                     b.HasIndex("CourseModelId");
 
-                    b.ToTable("TaskModel");
+                    b.ToTable("TaskModel", (string)null);
                 });
 
             modelBuilder.Entity("Api.Models.UserCorse", b =>
@@ -132,7 +132,7 @@ namespace BackendP2P.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UsersCorses");
+                    b.ToTable("UsersCorses", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.UserModel", b =>
@@ -166,7 +166,7 @@ namespace BackendP2P.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Api.Models.CommentModel", b =>

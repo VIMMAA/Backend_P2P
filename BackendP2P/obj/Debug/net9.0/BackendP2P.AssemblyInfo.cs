@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BackendP2P")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b4f599623645cf9f4787459b4bec37e75c10f565")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6b8bb85e55cdd20e6a765978b11dc563aabf4ebe")]
 [assembly: System.Reflection.AssemblyProductAttribute("BackendP2P")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BackendP2P")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
