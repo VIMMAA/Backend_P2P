@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/BackendP2P.props" />
-</Project>

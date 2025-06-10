@@ -1,12 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "tD8EhlwKfsf3k9sIPSFBX2oTBu0e4jT6KbKpGwlgEKI=",
-  "Source": "BackendP2P",
-  "BasePath": "_content/BackendP2P",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
-}
+{"Version":1,"Hash":"tD8EhlwKfsf3k9sIPSFBX2oTBu0e4jT6KbKpGwlgEKI=","Source":"BackendP2P","BasePath":"_content/BackendP2P","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
