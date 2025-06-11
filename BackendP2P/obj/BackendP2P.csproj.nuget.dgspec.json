@@ -1,32 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Shaphran\\Desktop\\HITS\\p2p\\Backend_P2P\\BackendP2P\\BackendP2P.csproj": {}
+    "/Users/vaceslav/Documents/GitHub/Backend_P2P/BackendP2P/BackendP2P.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Shaphran\\Desktop\\HITS\\p2p\\Backend_P2P\\BackendP2P\\BackendP2P.csproj": {
+    "/Users/vaceslav/Documents/GitHub/Backend_P2P/BackendP2P/BackendP2P.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Shaphran\\Desktop\\HITS\\p2p\\Backend_P2P\\BackendP2P\\BackendP2P.csproj",
+        "projectUniqueName": "/Users/vaceslav/Documents/GitHub/Backend_P2P/BackendP2P/BackendP2P.csproj",
         "projectName": "BackendP2P",
-        "projectPath": "C:\\Users\\Shaphran\\Desktop\\HITS\\p2p\\Backend_P2P\\BackendP2P\\BackendP2P.csproj",
-        "packagesPath": "C:\\Users\\Shaphran\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Shaphran\\Desktop\\HITS\\p2p\\Backend_P2P\\BackendP2P\\obj\\",
+        "projectPath": "/Users/vaceslav/Documents/GitHub/Backend_P2P/BackendP2P/BackendP2P.csproj",
+        "packagesPath": "/Users/vaceslav/.nuget/packages/",
+        "outputPath": "/Users/vaceslav/Documents/GitHub/Backend_P2P/BackendP2P/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Shaphran\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/vaceslav/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -45,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net9.0": {
@@ -61,7 +54,7 @@
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[9.0.5, )"
+              "version": "[9.0.6, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -107,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

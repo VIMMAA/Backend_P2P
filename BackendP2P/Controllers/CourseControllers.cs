@@ -349,6 +349,132 @@ public class CourseController : ControllerBase
             }
     }
 
+
+    [HttpGet("{id}/users")]
+    [Authorize]
+    public async Task<ActionResult<UserList>> GetCourseUsers(Guid id)
+    {
+        try
+        {
+            if (!await _context.Courses.AnyAsync(c => c.Id == id))
+            {
+                return NotFound(new { message = "Курс не найден" });
+            }
+
+            var currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (!await _context.UsersCorses.AnyAsync(uc => uc.CourseId == id && uc.UserId == currentUserId))
+            {
+                return Forbid();
+            }
+
+            var usersData = await _context.UsersCorses
+                .Where(uc => uc.CourseId == id)
+                .Join(_context.Users,
+                    userCourse => userCourse.UserId,
+                    user => user.Id,
+                    (userCourse, user) => new
+                    {
+                        User = user,
+                        userCourse.Role
+                    })
+                .ToListAsync();
+
+            var response = new UserList
+            {
+                Owner = usersData
+                    .Where(x => x.Role == Role.Owner)
+                    .Select(x => MapToUserDto(x.User))
+                    .FirstOrDefault(),
+                Teachers = usersData
+                    .Where(x => x.Role == Role.Teacher)
+                    .Select(x => MapToUserDto(x.User))
+                    .ToList(),
+                Students = usersData
+                    .Where(x => x.Role == Role.Student)
+                    .Select(x => MapToUserDto(x.User))
+                    .ToList()
+            };
+
+            if (response.Owner == null)
+            {
+                return StatusCode(500, new { message = "У курса не назначен владелец" });
+            }
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при получении пользователей курса");
+            return StatusCode(500, new { message = "Внутренняя ошибка сервера" });
+        }
+    }
+
+    [HttpGet("list")]
+    [Authorize]
+    public async Task<ActionResult<UserCoursesResponse>> GetUserCourses()
+    {
+        try
+        {
+            // 1. Получаем ID текущего пользователя из токена
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized(new { message = "Недействительный токен" });
+            }
+
+            // 2. Получаем все курсы пользователя с информацией о роли
+            var courses = await _context.UsersCorses
+                .Where(uc => uc.UserId == userId)
+                .Join(
+                    _context.Courses,
+                    userCourse => userCourse.CourseId,
+                    course => course.Id,
+                    (userCourse, course) => new UserCourseDto
+                    {
+                        CourseId = course.Id,
+                        CourseName = course.Name,
+                        Subject = course.Subject,
+                        Chapter = course.Chapter,
+                        Role = userCourse.Role.ToString(),
+                    })
+                .ToListAsync();
+
+            // 3. Группируем по ролям для удобного отображения
+            var response = new UserCoursesResponse
+            {
+                OwnedCourses = courses
+                    .Where(c => c.Role == Role.Owner.ToString())
+                    .ToList(),
+                TeachingCourses = courses
+                    .Where(c => c.Role == Role.Teacher.ToString())
+                    .ToList(),
+                StudentCourses = courses
+                    .Where(c => c.Role == Role.Student.ToString())
+                    .ToList()
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при получении списка курсов пользователя");
+            return StatusCode(500, new { message = "Произошла ошибка при обработке запроса" });
+        }
+    }
+
+    private UserDto MapToUserDto(UserModel user)
+    {
+        return new UserDto
+        {
+            Id = user.Id,
+            FullName = $"{user.LastName} {user.FirstName} {user.MiddleName}".Trim(),
+            Email = user.Email,
+            Birthday = user.Birthday.ToString("yyyy-MM-dd"),
+        };
+    }
+
+    
+
  
     private string GenerateRandomCode(int length = 8)
     {
