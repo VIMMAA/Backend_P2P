@@ -1,12 +1,78 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
+using Api.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiB.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class TaskController : ControllerBase
     {
+        private readonly ApplicationContext _context;
+        private readonly ITokenRevocationService _tokenRevocationService;
 
+        public TaskController(ApplicationContext context, ITokenRevocationService tokenRevocationService)
+        {
+            _context = context;
+            _tokenRevocationService = tokenRevocationService;
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPost("create")]
+        [Authorize]
+        public async Task<IActionResult> CreateTask([FromBody] TaskCreateModel model)
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Unauthorized access" });
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { status = "error", message = "Invalid token" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { status = "error", message = "Invalid arguments" });
+            }
+
+            var userId = Guid.Parse(userIdClaim.Value);
+
+            var task = new TaskModel
+            {
+                Id = Guid.NewGuid(),
+                AuthorId = userId,
+                Name = model.Title,
+                StudentGroup = model.StudentGroup,
+                Solution = null,
+                Comments = null,
+                Topic = model.Topic,
+                CreateTime = DateTime.UtcNow,
+            };
+
+            try
+            {
+                await _context.Tasks.AddAsync(task);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { status = "success", taskId = task.Id });
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Error creating task: {e}");
+                return StatusCode(500, new { status = "error", message = e.Message });
+            }
+        }
     }
 }

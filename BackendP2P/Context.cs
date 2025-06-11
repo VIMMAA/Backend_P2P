@@ -6,8 +6,7 @@ public class ApplicationContext : DbContext
     public DbSet<UserModel> Users { get; set; }
     public DbSet<UserCorse> UsersCorses { get; set; }
     public DbSet<CourseModel> Courses {get;set;}
-    public DbSet<InvitationLink> Lessons { get; set; }
-
+    public DbSet<TaskModel> Tasks { get; set; }
 
     public bool TestConnection()
     {
