@@ -78,7 +78,8 @@ namespace ApiB.Controllers
                 Solution = null,
                 Comments = null,
                 Topic = model.Topic,
-                CreateTime = DateTime.UtcNow
+                CreateTime = DateTime.UtcNow,
+                Deadline = model.DueDate
             };
 
             try
@@ -91,7 +92,63 @@ namespace ApiB.Controllers
             catch (Exception e)
             {
                 Console.Error.WriteLine($"Error creating task: {e}");
-                return StatusCode(500, new { status = "error", message = e.Message });
+                return StatusCode(500, new { status = "error", message = "Internal server error" });
+            }
+        }
+
+                [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetTask(Guid id)
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Unauthorized access" });
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { status = "error", message = "Invalid token" });
+            }
+
+            bool exists = await _context.Tasks.AnyAsync(t => t.Id == id);
+
+            if (!exists)
+            {
+                return BadRequest(new { status = "error", message = "This task does not exists" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { status = "error", message = "Invalid arguments" });
+            }
+
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(c => c.Id == id);
+
+                
+                TaskGetModel answer = new TaskGetModel
+                {
+                    Name = task.Name,
+                    Topic = task.Topic,
+                    StudentGroup = task.StudentGroup,
+                    Deadline = task.Deadline
+                };
+
+                return Ok(answer);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Error creating task: {e}");
+                return StatusCode(500, new { status = "error", message = "Internal server error" });
             }
         }
     }
