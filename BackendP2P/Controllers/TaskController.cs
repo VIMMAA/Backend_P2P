@@ -61,6 +61,11 @@ namespace ApiB.Controllers
                 return BadRequest(new { status = "error", message = "Invalid arguments" });
             }
 
+            if (!await _context.Courses.AnyAsync(c => c.Id == courseId))
+            {
+                return BadRequest(new { status = "error", message = "Course with this id does not exist" });
+            }
+
             var userId = Guid.Parse(userIdClaim.Value);
 
             var task = new TaskModel
@@ -73,7 +78,7 @@ namespace ApiB.Controllers
                 Solution = null,
                 Comments = null,
                 Topic = model.Topic,
-                CreateTime = DateTime.UtcNow,
+                CreateTime = DateTime.UtcNow
             };
 
             try
