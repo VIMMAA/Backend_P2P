@@ -1,9 +1,11 @@
 ﻿using System.Security.Claims;
 using Api.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Domain.Enums;
 
 namespace ApiB.Controllers
 {
@@ -24,10 +26,11 @@ namespace ApiB.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpPost("create")]
+        [HttpPost("{courseId}/create")]
         [Authorize]
-        public async Task<IActionResult> CreateTask([FromBody] TaskCreateModel model)
+        public async Task<IActionResult> CreateTask([FromBody] TaskCreateModel model, Guid courseId)
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
@@ -42,6 +45,17 @@ namespace ApiB.Controllers
                 return BadRequest(new { status = "error", message = "Invalid token" });
             }
 
+            bool hasAccess = await _context.UsersCorses.AnyAsync(u =>
+                (u.Role == Role.Owner || u.Role == Role.Teacher) &&
+                u.UserId.ToString() == userIdClaim.Value &&
+                u.CourseId == courseId
+            );
+
+            if (!hasAccess)
+            {
+                return Forbid();
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(new { status = "error", message = "Invalid arguments" });
@@ -53,6 +67,7 @@ namespace ApiB.Controllers
             {
                 Id = Guid.NewGuid(),
                 AuthorId = userId,
+                CourseId = courseId,
                 Name = model.Title,
                 StudentGroup = model.StudentGroup,
                 Solution = null,

@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Domain.Abstractions;
 
 namespace Api.Models
 {
-    public class SolutionModel
+    public class SolutionModel : Entity
     {
         [Required]
         public DateTime SubmissionTime { get; set; }
@@ -22,5 +23,7 @@ namespace Api.Models
 
         [Required]
         public string AttachmentPath { get; set; } = default!;
+        [Required]
+        public Guid taskId { get; set; }
     }
 }
