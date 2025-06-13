@@ -25,9 +25,6 @@ namespace Api.Models
         public string Content { get; set; } = default!;
 
         [Required]
-        public string ValidationPackage { get; set; } = default!;
-
-        [Required]
         public string AttachmentPath { get; set; } = default!;
         [Required]
         public Guid taskId { get; set; }
