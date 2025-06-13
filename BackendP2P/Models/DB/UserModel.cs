@@ -1,6 +1,8 @@
 using Domain.Abstractions;
 using Microsoft.VisualBasic;
 using Domain.Enums;
+using System.Text.Json.Serialization;
+using Api.Models;
 namespace Domain.Entities;
 
 public class UserModel : Entity
@@ -12,12 +14,14 @@ public class UserModel : Entity
     public required string Email { get; set; }
 
     public required string Password { get; set; }
-
-    public void Update (string firstName, string middleName , string lastName) 
+    public Guid? StudentTaskId { get; set; }
+    [JsonIgnore]
+    public List<StudentTaskModel>? StudentTask { get; set; } = new();
+    public void Update(string firstName, string middleName, string lastName)
     {
-       FirstName = firstName;
-       MiddleName = middleName;
-       LastName = lastName;
+        FirstName = firstName;
+        MiddleName = middleName;
+        LastName = lastName;
 
     }
 }

@@ -13,8 +13,7 @@ namespace Api.Models
         [Required]
         public string Topic { get; set; } = default!;
 
-        [Required]
-        public List<Guid> StudentGroup { get; set; } = new();
+        //public List<Guid> StudentGroup { get; set; } = new();
 
         [Required]
         public DateTime Deadline { get; set; }

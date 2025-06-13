@@ -9,6 +9,7 @@ public class ApplicationContext : DbContext
     public DbSet<TaskModel> Tasks { get; set; }
     public DbSet<SolutionModel> Solutions { get; set; }
     public DbSet<AssessmentModel> Assessments { get; set; }
+    public DbSet<StudentTaskModel> StudentTasks { get; set; }
 
     public bool TestConnection()
     {

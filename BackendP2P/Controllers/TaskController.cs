@@ -74,7 +74,7 @@ namespace ApiB.Controllers
                 AuthorId = userId,
                 CourseId = courseId,
                 Name = model.Title,
-                StudentGroup = model.StudentGroup,
+                // AssignedStudents = , потом дописать
                 Solution = null,
                 Comments = null,
                 Topic = model.Topic,
@@ -139,7 +139,7 @@ namespace ApiB.Controllers
                 {
                     Name = task.Name,
                     Topic = task.Topic,
-                    StudentGroup = task.StudentGroup,
+                    // StudentGroup = task.StudentGroup,
                     Deadline = task.Deadline
                 };
 
