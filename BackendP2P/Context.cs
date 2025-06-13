@@ -7,12 +7,14 @@ public class ApplicationContext : DbContext
     public DbSet<UserCorse> UsersCorses { get; set; }
     public DbSet<CourseModel> Courses {get;set;}
     public DbSet<TaskModel> Tasks { get; set; }
+    public DbSet<SolutionModel> Solutions { get; set; }
+    public DbSet<AssessmentModel> Assessments { get; set; }
 
     public bool TestConnection()
     {
         try
         {
-            return Database.CanConnect(); 
+            return Database.CanConnect();
         }
         catch (Exception ex)
         {

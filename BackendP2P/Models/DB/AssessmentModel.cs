@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Domain.Abstractions;
 
 namespace Api.Models
 {
-    public class AssessmentModel
+    public class AssessmentModel : Entity
     {
         public Guid? TeacherId { get; set; }
 
