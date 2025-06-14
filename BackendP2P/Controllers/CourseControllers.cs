@@ -415,14 +415,12 @@ public class CourseController : ControllerBase
     {
         try
         {
-            // 1. Получаем ID текущего пользователя из токена
             var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             {
                 return Unauthorized(new { message = "Недействительный токен" });
             }
 
-            // 2. Получаем все курсы пользователя с информацией о роли
             var courses = await _context.UsersCorses
                 .Where(uc => uc.UserId == userId)
                 .Join(
@@ -439,7 +437,6 @@ public class CourseController : ControllerBase
                     })
                 .ToListAsync();
 
-            // 3. Группируем по ролям для удобного отображения
             var response = new UserCoursesResponse
             {
                 OwnedCourses = courses

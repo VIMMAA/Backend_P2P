@@ -8,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+// builder.Services.AddHostedService<SolutionDistributionBackgroundService>();
+// builder.Services.AddScoped<SolutionDistributionService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policyBuilder =>
@@ -86,13 +89,16 @@ var app = builder.Build();
 
 if (true)
 {
-    app.UseSwagger(); 
-    app.UseSwaggerUI(c => 
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "OKR API V1");
-        c.RoutePrefix = string.Empty; 
+        c.RoutePrefix = string.Empty;
     });
 }
+
+
+
 
 app.UseCors("AllowAll");
 
