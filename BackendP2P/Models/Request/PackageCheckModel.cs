@@ -13,7 +13,6 @@ namespace Api.Models
 
         public string Deadline { get; set; }
 
-    
 
 
     }
