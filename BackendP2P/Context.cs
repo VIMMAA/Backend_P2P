@@ -12,6 +12,7 @@ public class ApplicationContext : DbContext
     public DbSet<StudentTaskModel> StudentTasks { get; set; }
     public DbSet<MaterialReadModel> MaterialReads { get; set; }
     public DbSet<MaterialWorkModel> MaterialWorks { get; set; }
+    public DbSet<CriteriaAssignments> CriteriaAssignments { get; set; }
 
     public bool TestConnection()
     {
