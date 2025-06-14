@@ -10,4 +10,6 @@ public class CriteriaAssignments : Entity
     public required string Level { get; set; }
     public Guid MaterialWorkModelId { get; set; }
     public MaterialWorkModel? MaterialWorkModel { get; set; }
+    public Guid GradeModelId { get; set; }
+    public GradeModel gradeModel { get; set; }
 }
