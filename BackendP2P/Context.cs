@@ -14,6 +14,8 @@ public class ApplicationContext : DbContext
     public DbSet<MaterialWorkModel> MaterialWorks { get; set; }
     public DbSet<CriteriaAssignments> CriteriaAssignments { get; set; }
     public DbSet<GradeModel> Grades { get; set; }
+    public DbSet<RemarkModel> Remarks { get; set; }
+    public DbSet<SolutionCheck> SolutionChecks { get; set; }
 
     public bool TestConnection()
     {
