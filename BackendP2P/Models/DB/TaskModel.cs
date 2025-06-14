@@ -25,4 +25,8 @@ public class TaskModel : Entity//2 fk - course&&user    //7 навигации -
     public DateTime Deadline { get; set; }
     [JsonIgnore]
     public CourseModel? Course { get; set; }//fk - 4
+    [JsonIgnore]
+    public List<MaterialReadModel>? MaterialReadModel { get; set; }//возможно и 1 материал максимум - потом посмотрю
+    [JsonIgnore]
+    public MaterialWorkModel? MaterialWorkModel { get; set; }
 }
