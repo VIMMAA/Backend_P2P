@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\BackendP2P.csproj": {}
+    "D:\\Programming\\Projects\\Backend_P2P\\backendp2p\\BackendP2P.csproj": {}
   },
   "projects": {
-    "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\BackendP2P.csproj": {
+    "D:\\Programming\\Projects\\Backend_P2P\\backendp2p\\BackendP2P.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\BackendP2P.csproj",
+        "projectUniqueName": "D:\\Programming\\Projects\\Backend_P2P\\backendp2p\\BackendP2P.csproj",
         "projectName": "BackendP2P",
-        "projectPath": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\BackendP2P.csproj",
+        "projectPath": "D:\\Programming\\Projects\\Backend_P2P\\backendp2p\\BackendP2P.csproj",
         "packagesPath": "C:\\Users\\kulik\\.nuget\\packages\\",
-        "outputPath": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\obj\\",
+        "outputPath": "D:\\Programming\\Projects\\Backend_P2P\\backendp2p\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Programming\\Microsoft Visual Studio\\Shared\\NuGetPackages"

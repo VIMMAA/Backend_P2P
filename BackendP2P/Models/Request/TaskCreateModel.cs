@@ -1,21 +1,18 @@
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models
 {
     public class TaskCreateModel
     {
-        [Required]
-        public string Title { get; set; } = default!;
-
-        [Required]
+        public required Guid AuthorId { get; set; }
+        public required Guid CourseId { get; set; }
+        public required string Name { get; set; }
         public string Topic { get; set; } = default!;
-
-        [Required]
-        public List<Guid> StudentGroup { get; set; } = new();
-
-        [Required]
-        public DateTime DueDate { get; set; }
+        public required DateTime CreateTime { get; set; }
+        public DateTime Deadline { get; set; }
     }
 }

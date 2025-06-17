@@ -48,7 +48,9 @@ public class TaskModel : Entity
     //Deadline
 
     //Materials
-    public List<MaterialReadModel>? MaterialReadModel { get; set; }
+    public Guid? MaterialReadId { get; set; }
+    public MaterialReadModel? MaterialReadModel { get; set; }
+    public Guid? MaterialWorkId { get; set; }
     public MaterialWorkModel? MaterialWorkModel { get; set; }
     //Materials
 
