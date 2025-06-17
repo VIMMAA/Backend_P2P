@@ -7,16 +7,10 @@ using Domain.Enums;
 public class GradeModel : Entity
 {
     public Guid? TeacherId { get; set; }
-    [JsonIgnore]
     public UserModel? Teacher { get; set; }
     public int Score { get; set; }
     public Guid StudentId { get; set; }
-    [JsonIgnore]
     public UserModel Student { get; set; }
-    [JsonIgnore]
-    public CriteriaAssignments CriteriaAssignment { get; set; }
     public Guid SolutionCheckId { get; set; }
-    [JsonIgnore]
     public SolutionCheck SolutionCheck { get; set; }
-    
 }

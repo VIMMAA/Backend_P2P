@@ -6,27 +6,54 @@ using Domain.Entities;
 
 namespace Api.Models;
 
-public class TaskModel : Entity//2 fk - course&&user    //7 навигации - course+ &&user+&&list users+&&List comments+&&base class materials&&check list&&list solution+
+public class TaskModel : Entity
 {
+    //AUTHOR
     public required Guid AuthorId { get; set; }
-    [JsonIgnore]
-    public UserModel? Author { get; set; }//fk - 5 
-    public Guid? StudentTaskId { get; set; }
-    [JsonIgnore]
-    public List<StudentTaskModel>? StudentTask { get; set; } = new();
-    public List<SolutionModel>? Solution { get; set; }//2
+    public UserModel? Author { get; set; }
+    //AUTHOR
+
+    //GROUP
+    public List<UserModel> Students { get; set; }
+    //GROUP
+
+    //Solutions
+    public List<SolutionModel>? Solutions { get; set; }//2
+    //Solutions
+
+    //Course
     [ForeignKey(nameof(Course))]
     public required Guid CourseId { get; set; }
-    public required List<CommentModel>? Comments { get; set; }//3
+    public CourseModel? Course { get; set; }
+    //Course
+
+    //Comments
+    public required List<CommentModel>? Comments { get; set; }
+    //Comments
+
+    //Name
     public required string Name { get; set; }
-    [Required]
+    //Name
+
+    //Topic
     public string Topic { get; set; } = default!;
+    //Topic
+    
+    //CreateTime
     public required DateTime CreateTime { get; set; }
+    //CreateTime
+
+    //Deadline
     public DateTime Deadline { get; set; }
-    [JsonIgnore]
-    public CourseModel? Course { get; set; }//fk - 4
-    [JsonIgnore]
-    public List<MaterialReadModel>? MaterialReadModel { get; set; }//возможно и 1 материал максимум - потом посмотрю
-    [JsonIgnore]
+    //Deadline
+
+    //Materials
+    public List<MaterialReadModel>? MaterialReadModel { get; set; }
     public MaterialWorkModel? MaterialWorkModel { get; set; }
+    //Materials
+
+    //Grade
+    public Guid GradeId { get; set; }
+    public GradeModel Grade { get; set; }
+    //Grade
 }

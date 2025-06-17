@@ -9,10 +9,9 @@ public class ApplicationContext : DbContext
     public DbSet<TaskModel> Tasks { get; set; }
     public DbSet<SolutionModel> Solutions { get; set; }
     public DbSet<AssessmentModel> Assessments { get; set; }
-    public DbSet<StudentTaskModel> StudentTasks { get; set; }
     public DbSet<MaterialReadModel> MaterialReads { get; set; }
     public DbSet<MaterialWorkModel> MaterialWorks { get; set; }
-    public DbSet<CriteriaAssignments> CriteriaAssignments { get; set; }
+    public DbSet<CriteriaAssignment> CriteriaAssignments { get; set; }
     public DbSet<GradeModel> Grades { get; set; }
     public DbSet<RemarkModel> Remarks { get; set; }
     public DbSet<SolutionCheck> SolutionChecks { get; set; }

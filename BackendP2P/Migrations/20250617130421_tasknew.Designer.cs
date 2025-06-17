@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendP2P.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250614030121_CriteriaAssignments")]
-    partial class CriteriaAssignments
+    [Migration("20250617130421_tasknew")]
+    partial class tasknew
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,29 +135,6 @@ namespace BackendP2P.Migrations
                     b.Property<DateTime>("SubmissionTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("taskId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssessmentId");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("taskId");
-
-                    b.ToTable("Solutions");
-                });
-
-            modelBuilder.Entity("Api.Models.StudentTaskModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TaskId")
                         .HasColumnType("uuid");
 
@@ -167,7 +144,7 @@ namespace BackendP2P.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("StudentTasks");
+                    b.ToTable("Solutions");
                 });
 
             modelBuilder.Entity("Api.Models.TaskModel", b =>
@@ -188,12 +165,12 @@ namespace BackendP2P.Migrations
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("GradeId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<Guid?>("StudentTaskId")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("Topic")
                         .IsRequired()
@@ -204,6 +181,8 @@ namespace BackendP2P.Migrations
                     b.HasIndex("AuthorId");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("GradeId");
 
                     b.ToTable("Tasks");
                 });
@@ -228,7 +207,7 @@ namespace BackendP2P.Migrations
                     b.ToTable("UsersCorses");
                 });
 
-            modelBuilder.Entity("Domain.Entities.CriteriaAssignments", b =>
+            modelBuilder.Entity("Domain.Entities.CriteriaAssignment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -258,6 +237,36 @@ namespace BackendP2P.Migrations
                     b.HasIndex("MaterialWorkModelId");
 
                     b.ToTable("CriteriaAssignments");
+                });
+
+            modelBuilder.Entity("Domain.Entities.GradeModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SolutionCheckId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("TeacherId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SolutionCheckId")
+                        .IsUnique();
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("Domain.Entities.MaterialReadModel", b =>
@@ -308,6 +317,35 @@ namespace BackendP2P.Migrations
                     b.ToTable("MaterialWorks");
                 });
 
+            modelBuilder.Entity("Domain.Entities.RemarkModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("SolutionCheckId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("SolutionCheckId")
+                        .IsUnique();
+
+                    b.ToTable("Remarks");
+                });
+
             modelBuilder.Entity("Domain.Entities.UserModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -337,12 +375,46 @@ namespace BackendP2P.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("StudentTaskId")
+                    b.Property<Guid?>("TaskModelId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TaskModelId");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SolutionCheck", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AttachmentPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SolutionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("SubmissionTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("SolutionId");
+
+                    b.ToTable("SolutionChecks");
                 });
 
             modelBuilder.Entity("Api.Models.AssessmentModel", b =>
@@ -371,41 +443,14 @@ namespace BackendP2P.Migrations
 
             modelBuilder.Entity("Api.Models.SolutionModel", b =>
                 {
-                    b.HasOne("Api.Models.AssessmentModel", "Assessment")
-                        .WithMany()
-                        .HasForeignKey("AssessmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.UserModel", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Api.Models.TaskModel", "task")
-                        .WithMany("Solution")
-                        .HasForeignKey("taskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Assessment");
-
-                    b.Navigation("Student");
-
-                    b.Navigation("task");
-                });
-
-            modelBuilder.Entity("Api.Models.StudentTaskModel", b =>
-                {
-                    b.HasOne("Domain.Entities.UserModel", "Student")
-                        .WithMany("StudentTask")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Api.Models.TaskModel", "Task")
-                        .WithMany("StudentTask")
+                        .WithMany("Solutions")
                         .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -429,20 +474,53 @@ namespace BackendP2P.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.GradeModel", "Grade")
+                        .WithMany()
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Author");
 
                     b.Navigation("Course");
+
+                    b.Navigation("Grade");
                 });
 
-            modelBuilder.Entity("Domain.Entities.CriteriaAssignments", b =>
+            modelBuilder.Entity("Domain.Entities.CriteriaAssignment", b =>
                 {
                     b.HasOne("Domain.Entities.MaterialWorkModel", "MaterialWorkModel")
-                        .WithMany("criteriaAssignments")
+                        .WithMany("CriteriaAssignments")
                         .HasForeignKey("MaterialWorkModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("MaterialWorkModel");
+                });
+
+            modelBuilder.Entity("Domain.Entities.GradeModel", b =>
+                {
+                    b.HasOne("SolutionCheck", "SolutionCheck")
+                        .WithOne("GradeModel")
+                        .HasForeignKey("Domain.Entities.GradeModel", "SolutionCheckId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.UserModel", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.UserModel", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId");
+
+                    b.Navigation("SolutionCheck");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("Domain.Entities.MaterialReadModel", b =>
@@ -467,6 +545,51 @@ namespace BackendP2P.Migrations
                     b.Navigation("Task");
                 });
 
+            modelBuilder.Entity("Domain.Entities.RemarkModel", b =>
+                {
+                    b.HasOne("Domain.Entities.UserModel", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SolutionCheck", "SolutionCheck")
+                        .WithOne("Remark")
+                        .HasForeignKey("Domain.Entities.RemarkModel", "SolutionCheckId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("SolutionCheck");
+                });
+
+            modelBuilder.Entity("Domain.Entities.UserModel", b =>
+                {
+                    b.HasOne("Api.Models.TaskModel", null)
+                        .WithMany("Students")
+                        .HasForeignKey("TaskModelId");
+                });
+
+            modelBuilder.Entity("SolutionCheck", b =>
+                {
+                    b.HasOne("Domain.Entities.UserModel", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Api.Models.SolutionModel", "Solution")
+                        .WithMany()
+                        .HasForeignKey("SolutionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Solution");
+                });
+
             modelBuilder.Entity("Api.Models.CourseModel", b =>
                 {
                     b.Navigation("Tasks");
@@ -480,19 +603,21 @@ namespace BackendP2P.Migrations
 
                     b.Navigation("MaterialWorkModel");
 
-                    b.Navigation("Solution");
+                    b.Navigation("Solutions");
 
-                    b.Navigation("StudentTask");
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("Domain.Entities.MaterialWorkModel", b =>
                 {
-                    b.Navigation("criteriaAssignments");
+                    b.Navigation("CriteriaAssignments");
                 });
 
-            modelBuilder.Entity("Domain.Entities.UserModel", b =>
+            modelBuilder.Entity("SolutionCheck", b =>
                 {
-                    b.Navigation("StudentTask");
+                    b.Navigation("GradeModel");
+
+                    b.Navigation("Remark");
                 });
 #pragma warning restore 612, 618
         }

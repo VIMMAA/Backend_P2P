@@ -12,11 +12,7 @@ public class UserModel : Entity
     public required string LastName { get; set; }
     public required DateOnly Birthday { get; set; }
     public required string Email { get; set; }
-
     public required string Password { get; set; }
-    public Guid? StudentTaskId { get; set; }
-    [JsonIgnore]
-    public List<StudentTaskModel>? StudentTask { get; set; } = new();
     public void Update(string firstName, string middleName, string lastName)
     {
         FirstName = firstName;
