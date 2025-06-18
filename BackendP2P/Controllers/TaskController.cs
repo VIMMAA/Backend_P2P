@@ -27,7 +27,7 @@ namespace ApiB.Controllers
 
         [HttpPost("{courseId}")]
         [Authorize]
-        public async Task<IActionResult> CreateTask([FromBody] TaskCreateModel model, Guid courseId)
+        public async Task<ActionResult<TaskCreatedModel>> CreateTask([FromBody] TaskCreateModel model, Guid courseId)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -67,7 +67,7 @@ namespace ApiB.Controllers
                     Course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == courseId),
                     Name = model.Name,
                     Topic = model.Topic,
-                    CreateTime = model.CreateTime,
+                    CreateTime = DateTime.UtcNow,
                     Deadline = model.Deadline,
                     Comments = new List<CommentModel>(),
                     Solutions = new List<SolutionModel>(),
@@ -118,7 +118,7 @@ namespace ApiB.Controllers
         }
         [HttpGet("{courseId}/{taskId}")]
         [Authorize]
-        public async Task<IActionResult> GetTask(Guid courseId, Guid taskId)
+        public async Task<ActionResult<TaskCreatedModel>> GetTask(Guid courseId, Guid taskId)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -158,7 +158,7 @@ namespace ApiB.Controllers
                     CourseId = task.CourseId,
                     Name = task.Name,
                     Topic = task.Topic,
-                    CreateTime = task.CreateTime,
+                    CreateTime = DateTime.UtcNow,
                     Deadline = task.Deadline,
                     Comments = task.Comments.Select(c => new CommentModel
                     {
