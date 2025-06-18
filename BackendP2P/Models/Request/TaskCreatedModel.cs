@@ -16,7 +16,6 @@ namespace BackendP2P.Models.Request
         public string Topic { get; set; } = default!;
         public required DateTime CreateTime { get; set; }
         public DateTime Deadline { get; set; }
-        public Guid? MaterialId { get; set; }
         public List<GradeModel> Grades { get; set; }
         public Guid? MaterialWorkId { get; set; }
         public Guid? MaterialReadId { get; set; }
