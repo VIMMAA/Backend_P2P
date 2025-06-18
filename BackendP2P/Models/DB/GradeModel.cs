@@ -13,4 +13,5 @@ public class GradeModel : Entity
     public UserModel Student { get; set; }
     public Guid SolutionCheckId { get; set; }
     public SolutionCheck SolutionCheck { get; set; }
+    public TaskModel Task { get; set; }
 }

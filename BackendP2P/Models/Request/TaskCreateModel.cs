@@ -14,5 +14,7 @@ namespace Api.Models
         public string Topic { get; set; } = default!;
         public required DateTime CreateTime { get; set; }
         public DateTime Deadline { get; set; }
+        public Guid MaterialReadId { get; set; }
+        public Guid MaterialWorkId { get; set; }
     }
 }

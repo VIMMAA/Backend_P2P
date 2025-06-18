@@ -10,25 +10,28 @@ public class TaskModel : Entity
 {
     //AUTHOR
     public required Guid AuthorId { get; set; }
+    [JsonIgnore]
     public UserModel? Author { get; set; }
     //AUTHOR
 
     //GROUP
-    public List<UserModel> Students { get; set; }
+    public List<Guid> Students { get; set; }
     //GROUP
 
     //Solutions
+    [JsonIgnore]
     public List<SolutionModel>? Solutions { get; set; }//2
     //Solutions
 
     //Course
     [ForeignKey(nameof(Course))]
     public required Guid CourseId { get; set; }
+    [JsonIgnore]
     public CourseModel? Course { get; set; }
     //Course
 
     //Comments
-    public required List<CommentModel>? Comments { get; set; }
+    public List<CommentModel>? Comments { get; set; }
     //Comments
 
     //Name
@@ -49,13 +52,14 @@ public class TaskModel : Entity
 
     //Materials
     public Guid? MaterialReadId { get; set; }
+    [JsonIgnore]
     public MaterialReadModel? MaterialReadModel { get; set; }
     public Guid? MaterialWorkId { get; set; }
+    [JsonIgnore]
     public MaterialWorkModel? MaterialWorkModel { get; set; }
     //Materials
 
     //Grade
-    public Guid GradeId { get; set; }
-    public GradeModel Grade { get; set; }
+    public List<GradeModel> Grades { get; set; }
     //Grade
 }
