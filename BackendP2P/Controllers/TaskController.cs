@@ -25,7 +25,7 @@ namespace ApiB.Controllers
             _tokenRevocationService = tokenRevocationService;
         }
 
-        [HttpPost("{courseId}/create")]
+        [HttpPost("{courseId}")]
         [Authorize]
         public async Task<IActionResult> CreateTask([FromBody] TaskCreateModel model, Guid courseId)
         {
@@ -81,7 +81,7 @@ namespace ApiB.Controllers
                 TaskCreatedModel answer = new TaskCreatedModel
                 {
                     Id = task.Id,
-                    AuthorId = userId,
+                    AuthorId = task.AuthorId,
                     Students = new List<Guid>(),
                     CourseId = task.CourseId,
                     Name = task.Name,
@@ -97,6 +97,85 @@ namespace ApiB.Controllers
 
                 await _context.Tasks.AddAsync(task);
                 await _context.SaveChangesAsync();
+
+                return Ok(answer);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error registering user: {ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [HttpGet("{courseId}/{taskId}")]
+        [Authorize]
+        public async Task<IActionResult> GetTask(Guid courseId, Guid taskId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+
+            try
+            {
+                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(g => g.Grades).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                    return NotFound(new { message = "Task not found" });
+
+                TaskCreatedModel answer = new TaskCreatedModel
+                {
+                    Id = task.Id,
+                    AuthorId = task.AuthorId,
+                    Students = new List<Guid>(),
+                    CourseId = task.CourseId,
+                    Name = task.Name,
+                    Topic = task.Topic,
+                    CreateTime = task.CreateTime,
+                    Deadline = task.Deadline,
+                    Comments = task.Comments.Select(c => new CommentModel
+                    {
+                        Id = c.Id,
+                        Text = c.Text,
+                        AuthorId = c.AuthorId,
+                        CreateTime = c.CreateTime
+                    }).ToList(),
+                    Solutions = task.Solutions.Select(s => new SolutionModel { 
+                        Id = s.Id,
+                        StudentId = s.StudentId,
+                        Content = s.Content,
+                        AttachmentPath = s.AttachmentPath,
+                        TaskId = s.TaskId,
+                    }).ToList(),
+                    Grades = task.Grades.Select(g => new GradeModel
+                    {
+                        Id = g.Id,
+                        TeacherId = g.TeacherId,
+                        Score = g.Score,
+                        StudentId = g.StudentId,
+                    }).ToList(),
+                    MaterialReadId = task.MaterialReadId,
+                    MaterialWorkId = task.MaterialWorkId,
+                };
 
                 return Ok(answer);
             }

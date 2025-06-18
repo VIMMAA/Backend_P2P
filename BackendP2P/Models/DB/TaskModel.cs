@@ -60,6 +60,7 @@ public class TaskModel : Entity
     //Materials
 
     //Grade
+    [JsonIgnore]
     public List<GradeModel> Grades { get; set; }
     //Grade
 }

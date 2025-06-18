@@ -8,7 +8,6 @@ namespace Api.Models
 {
     public class TaskCreateModel
     {
-        public required Guid AuthorId { get; set; }
         public required string Name { get; set; }
         public string Topic { get; set; } = default!;
         public required DateTime CreateTime { get; set; }

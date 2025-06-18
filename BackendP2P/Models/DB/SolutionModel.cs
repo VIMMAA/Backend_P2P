@@ -10,11 +10,13 @@ namespace Api.Models
     {
         public DateTime SubmissionTime { get; set; }
         public Guid StudentId { get; set; }
+        [JsonIgnore]
         public UserModel? Student { get; set; }
-        public Guid AssessmentId { get; set; }
+        //public Guid AssessmentId { get; set; } //я пока не добавляю gradeModel - в таске уже есть грейд
         public string Content { get; set; } = default!;
         public string AttachmentPath { get; set; } = default!;
         public Guid TaskId { get; set; }
+        [JsonIgnore]
         public TaskModel? Task { get; set; }//3
     }
 }
