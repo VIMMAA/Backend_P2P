@@ -62,7 +62,7 @@ namespace ApiB.Controllers
                     Id = Guid.NewGuid(),
                     AuthorId = userId,
                     Author = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId),
-                    Students = new List<Guid>(),
+                    Students = model.Students?.ToList() ?? new List<Guid>(),
                     CourseId = courseId,
                     Course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == courseId),
                     Name = model.Name,
@@ -78,11 +78,20 @@ namespace ApiB.Controllers
                     MaterialWorkModel = await _context.MaterialWorks.FirstOrDefaultAsync(m => m.Id == model.MaterialWorkId)
                 };
 
+                foreach (var studentId in task.Students)
+                {
+                    if (task.Students.Count != task.Students.Distinct().Count())
+                        return BadRequest(new { message = "Duplicate students in the list." });
+                    if (!await _context.UsersCorses.AnyAsync(s => s.UserId == studentId && task.CourseId == s.CourseId))
+                        return BadRequest(new { message = "Student not found in StudentCorse" });
+
+                }
+
                 TaskCreatedModel answer = new TaskCreatedModel
                 {
                     Id = task.Id,
                     AuthorId = task.AuthorId,
-                    Students = new List<Guid>(),
+                    Students = task.Students,
                     CourseId = task.CourseId,
                     Name = task.Name,
                     Topic = task.Topic,
@@ -138,7 +147,6 @@ namespace ApiB.Controllers
             try
             {
                 TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(g => g.Grades).FirstOrDefaultAsync(t => t.Id == taskId);
-
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
 
@@ -146,7 +154,7 @@ namespace ApiB.Controllers
                 {
                     Id = task.Id,
                     AuthorId = task.AuthorId,
-                    Students = new List<Guid>(),
+                    Students = task.Students,
                     CourseId = task.CourseId,
                     Name = task.Name,
                     Topic = task.Topic,

@@ -9,6 +9,7 @@ namespace Api.Models
     public class TaskCreateModel
     {
         public required string Name { get; set; }
+        public List<Guid> Students { get; set; }
         public string Topic { get; set; } = default!;
         public required DateTime CreateTime { get; set; }
         public DateTime Deadline { get; set; }

@@ -8,8 +8,9 @@ namespace Api.Models;
 
 public class UserCorse: Entity
 {
+    public UserModel User { get; set; }
     public required Guid UserId { get; set; }
-
+    public CourseModel Course { get; set; }
     public required Guid CourseId { get; set; }
 
     public required Role? Role { get; set; }
