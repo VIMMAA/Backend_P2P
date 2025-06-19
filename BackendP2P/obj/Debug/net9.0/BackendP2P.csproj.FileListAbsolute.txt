@@ -332,3 +332,4 @@ D:\Programming\Projects\Backend_P2P\BackendP2P\obj\Debug\net9.0\refint\BackendP2
 D:\Programming\Projects\Backend_P2P\BackendP2P\obj\Debug\net9.0\BackendP2P.pdb
 D:\Programming\Projects\Backend_P2P\BackendP2P\obj\Debug\net9.0\BackendP2P.genruntimeconfig.cache
 D:\Programming\Projects\Backend_P2P\BackendP2P\obj\Debug\net9.0\ref\BackendP2P.dll
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\taskData.json

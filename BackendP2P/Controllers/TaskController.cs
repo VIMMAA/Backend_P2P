@@ -13,6 +13,7 @@ namespace ApiB.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     [Produces("application/json")]
     public class TaskController : ControllerBase
     {
@@ -26,7 +27,6 @@ namespace ApiB.Controllers
         }
 
         [HttpPost("{courseId}")]
-        [Authorize]
         public async Task<ActionResult<TaskCreatedModel>> CreateTask([FromBody] TaskCreateModel model, Guid courseId)
         {
             if (!User.Identity.IsAuthenticated)
@@ -82,8 +82,8 @@ namespace ApiB.Controllers
                 {
                     if (task.Students.Count != task.Students.Distinct().Count())
                         return BadRequest(new { message = "Duplicate students in the list." });
-                    if (!await _context.UsersCorses.AnyAsync(s => s.UserId == studentId && task.CourseId == s.CourseId))
-                        return BadRequest(new { message = "Student not found in StudentCorse" });
+                    if (!await _context.UsersCorses.AnyAsync(s => s.UserId == studentId && task.CourseId == s.CourseId && s.Role == Role.Student))
+                        return BadRequest(new { message = "At least one of the students not found on this course" });
 
                 }
 
@@ -117,7 +117,6 @@ namespace ApiB.Controllers
             }
         }
         [HttpGet("{courseId}/{taskId}")]
-        [Authorize]
         public async Task<ActionResult<TaskCreatedModel>> GetTask(Guid courseId, Guid taskId)
         {
             if (!User.Identity.IsAuthenticated)
@@ -158,7 +157,7 @@ namespace ApiB.Controllers
                     CourseId = task.CourseId,
                     Name = task.Name,
                     Topic = task.Topic,
-                    CreateTime = DateTime.UtcNow,
+                    CreateTime = task.CreateTime,
                     Deadline = task.Deadline,
                     Comments = task.Comments.Select(c => new CommentModel
                     {
@@ -188,6 +187,68 @@ namespace ApiB.Controllers
                 return Ok(answer);
             }
             catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error registering user: {ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+
+        [HttpPut("{courseId}/{taskId}")]
+        public async Task<ActionResult<ResponseModel>> EditTask(Guid courseId, Guid taskId, [FromBody] TaskEditModel dto)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+
+            try
+            {
+                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(g => g.Grades).FirstOrDefaultAsync(t => t.Id == taskId);
+                if (task == null)
+                    return NotFound(new { message = "Task not found" });
+
+                task.Name = dto.Name;
+                task.Students = dto.Students;
+                task.Topic = dto.Topic;
+                task.Deadline = dto.Deadline;
+                task.MaterialReadId = dto.MaterialReadId;
+                task.MaterialWorkId = dto.MaterialWorkId;
+
+                foreach (var studentId in task.Students)
+                {
+                    if (task.Students.Count != task.Students.Distinct().Count())
+                        return BadRequest(new { message = "Duplicate students in the list." });
+                    if (!await _context.UsersCorses.AnyAsync(s => s.UserId == studentId && task.CourseId == s.CourseId && s.Role == Role.Student))
+                        return BadRequest(new { message = "One of the students not found in StudentCorse" });
+
+                }
+
+                _context.Tasks.Update(task);
+                await _context.SaveChangesAsync();
+
+                return Ok(new ResponseModel("Task updated"));
+            }
+            catch(Exception ex)
             {
                 Console.Error.WriteLine($"Error registering user: {ex}");
 
