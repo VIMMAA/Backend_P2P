@@ -12,7 +12,5 @@ namespace Api.Models
         public List<Guid> Students { get; set; }
         public string Topic { get; set; } = default!;
         public DateTime Deadline { get; set; }
-        public Guid MaterialReadId { get; set; }
-        public Guid MaterialWorkId { get; set; }
     }
 }

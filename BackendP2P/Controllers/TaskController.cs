@@ -70,11 +70,7 @@ namespace ApiB.Controllers
                     Deadline = model.Deadline,
                     Comments = new List<CommentModel>(),
                     Solutions = new List<SolutionModel>(),
-                    Grades = new List<GradeModel>(),
-                    MaterialReadId = model.MaterialReadId,
-                    MaterialReadModel = await _context.MaterialReads.FirstOrDefaultAsync(m => m.Id == model.MaterialReadId),
-                    MaterialWorkId = model.MaterialWorkId,
-                    MaterialWorkModel = await _context.MaterialWorks.FirstOrDefaultAsync(m => m.Id == model.MaterialWorkId)
+                    Grades = new List<GradeModel>()
                 };
 
                 foreach (var studentId in task.Students)
@@ -98,9 +94,7 @@ namespace ApiB.Controllers
                     Deadline = task.Deadline,
                     Comments = new List<CommentModel>(),
                     Solutions = new List<SolutionModel>(),
-                    Grades = new List<GradeModel>(),
-                    MaterialReadId = task.MaterialReadId,
-                    MaterialWorkId = task.MaterialWorkId,
+                    Grades = new List<GradeModel>()
                 };
 
                 await _context.Tasks.AddAsync(task);
@@ -230,8 +224,6 @@ namespace ApiB.Controllers
                 task.Students = dto.Students;
                 task.Topic = dto.Topic;
                 task.Deadline = dto.Deadline;
-                task.MaterialReadId = dto.MaterialReadId;
-                task.MaterialWorkId = dto.MaterialWorkId;
 
                 foreach (var studentId in task.Students)
                 {
@@ -294,6 +286,70 @@ namespace ApiB.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok(new ResponseModel("Task deleted"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [HttpPost("{taskId}/readMaterial")]
+        public async Task<ActionResult<MaterialReadModel>> CreateReadTask(Guid taskId, [FromBody] TaskReadCreateDto taskRead)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                if (await _context.MaterialReads.AnyAsync(u => u.TaskId == taskId))
+                {
+                    return BadRequest("Task already have read material");
+                }
+
+                MaterialReadModel updateRead = new MaterialReadModel
+                {
+                    Id = Guid.NewGuid(),
+                    TaskId = taskId,
+                    Task = task,
+                    Content = taskRead.Content
+                };
+                
+                task.MaterialReadId = updateRead.Id;
+                task.MaterialReadModel = updateRead;
+
+                _context.Tasks.Update(task);
+                await _context.MaterialReads.AddAsync(updateRead);
+                await _context.SaveChangesAsync();
+
+                return Ok(updateRead);
             }
             catch (Exception ex)
             {
