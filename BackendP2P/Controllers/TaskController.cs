@@ -12,8 +12,8 @@ using System.Security.Claims;
 namespace ApiB.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     [Authorize]
+    [ApiController]
     [Produces("application/json")]
     public class TaskController : ControllerBase
     {
@@ -25,7 +25,6 @@ namespace ApiB.Controllers
             _context = context;
             _tokenRevocationService = tokenRevocationService;
         }
-
         [HttpPost("{courseId}")]
         public async Task<ActionResult<TaskCreatedModel>> CreateTask([FromBody] TaskCreateModel model, Guid courseId)
         {
@@ -111,12 +110,12 @@ namespace ApiB.Controllers
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error registering user: {ex}");
+                Console.Error.WriteLine($"\nERROR\n{ex}");
 
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
-        [HttpGet("{courseId}/{taskId}")]
+        [HttpGet("{taskId}")]
         public async Task<ActionResult<TaskCreatedModel>> GetTask(Guid courseId, Guid taskId)
         {
             if (!User.Identity.IsAuthenticated)
@@ -188,13 +187,13 @@ namespace ApiB.Controllers
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error registering user: {ex}");
+                Console.Error.WriteLine($"\nERROR\n{ex}");
 
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
 
-        [HttpPut("{courseId}/{taskId}")]
+        [HttpPut("{taskId}")]
         public async Task<ActionResult<ResponseModel>> EditTask(Guid courseId, Guid taskId, [FromBody] TaskEditModel dto)
         {
             if (!User.Identity.IsAuthenticated)
@@ -250,7 +249,55 @@ namespace ApiB.Controllers
             }
             catch(Exception ex)
             {
-                Console.Error.WriteLine($"Error registering user: {ex}");
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+
+        [HttpDelete("{taskId}")]
+        public async Task<ActionResult<ResponseModel>> DeleteTask(Guid courseId, Guid taskId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                _context.Tasks.Remove(task);
+                await _context.SaveChangesAsync();
+
+                return Ok(new ResponseModel("Task deleted"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
 
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
