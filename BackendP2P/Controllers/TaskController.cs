@@ -489,6 +489,38 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
+        [HttpGet("{taskId}/workMaterial")]
+        public async Task<IActionResult> GetWorkTask(Guid taskId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                if (materialWork == null)
+                {
+                    return BadRequest("Task doesn't have any work material.");
+                }
+
+                return Ok(materialWork);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)
