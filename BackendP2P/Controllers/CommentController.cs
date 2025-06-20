@@ -4,6 +4,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.Design;
 using System.Security.Claims;
 
 namespace BackendP2P.Controllers
@@ -56,6 +57,45 @@ namespace BackendP2P.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok(new ResponseModel("Comment added to task"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
+        [HttpPut("{taskId}/{commentId}")]
+        public async Task<IActionResult> EditCommentTask(Guid taskId, Guid commentId, [FromBody] CommentCreateModel dto)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            Guid userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                CommentModel? comment = await _context.Comments.FirstOrDefaultAsync(u => u.Id == commentId && u.AuthorId == userId);
+
+                if (comment == null)
+                {
+                    return NotFound("Comment not found");
+                }
+
+                comment.Text = dto.Text;
+
+
+                _context.Comments.Update(comment);
+                _context.Tasks.Update(task);
+                await _context.SaveChangesAsync();
+
+                return Ok(new ResponseModel("Comment updated in task"));
             }
             catch (Exception ex)
             {
