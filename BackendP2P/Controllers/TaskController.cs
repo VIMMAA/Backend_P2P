@@ -536,5 +536,72 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [HttpPost("{taskId}/workMaterial")]
+        public async Task<ActionResult<MaterialReadModel>> CreateWorkTask(Guid taskId, [FromBody] TaskWorkCreateModel taskWork)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                if (await _context.MaterialWorks.AnyAsync(u => u.TaskId == taskId))
+                {
+                    return BadRequest("Task already have work material");
+                }
+
+                MaterialWorkModel updateWork = new MaterialWorkModel
+                {
+                    Id = Guid.NewGuid(),
+                    TaskId = taskId,
+                    Task = task,
+                    Score = taskWork.Score,
+                    Deadline = task.Deadline,
+                    Instructions = taskWork.Instructions,
+                    CriteriaAssignments = null//пока null
+                };
+
+                task.MaterialWorkId = updateWork.Id;
+                task.MaterialWorkModel = updateWork;
+
+                _context.Tasks.Update(task);
+                await _context.MaterialWorks.AddAsync(updateWork);
+                await _context.SaveChangesAsync();
+
+                return Ok(updateWork);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
     }
 }
