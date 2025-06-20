@@ -8,7 +8,7 @@ public class CriteriaAssignment : Entity//раньше было название CriteriaAssignmen
 {
     public required string Title { get; set; }
     public required string Conditions { get; set; }
-    public required string CountScore { get; set; }
+    public required int CountScore { get; set; }
     public required string Level { get; set; }
     public Guid MaterialWorkModelId { get; set; }
     [JsonIgnore]

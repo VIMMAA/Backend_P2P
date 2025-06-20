@@ -221,9 +221,8 @@ namespace BackendP2P.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("CountScore")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CountScore")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Level")
                         .IsRequired()

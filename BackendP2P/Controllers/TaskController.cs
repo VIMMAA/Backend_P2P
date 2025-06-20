@@ -403,7 +403,7 @@ namespace ApiB.Controllers
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
         [HttpPost("{taskId}/workMaterial")]
-        public async Task<IActionResult> CreateWorkTask(Guid taskId, [FromBody] TaskWorkCreateModel taskWork)
+        public async Task<IActionResult> CreateWorkTask(Guid taskId, [FromBody] CombinedTaskWorkAndCriteriaModels CombinedDto)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
@@ -422,21 +422,35 @@ namespace ApiB.Controllers
                     return BadRequest("Task already have work material");
                 }
 
+
                 MaterialWorkModel updateWork = new MaterialWorkModel
                 {
                     Id = Guid.NewGuid(),
                     TaskId = taskId,
                     Task = task,
-                    Score = taskWork.Score,
+                    Score = CombinedDto.MaterialTaskWork.Score,
                     Deadline = task.Deadline,
-                    Instructions = taskWork.Instructions,
-                    CriteriaAssignments = null//пока null
+                    Instructions = CombinedDto.MaterialTaskWork.Instructions
                 };
+
+                CriteriaAssignment criteria = new CriteriaAssignment
+                {
+                    Id = Guid.NewGuid(),
+                    Title = CombinedDto.CriteriaAssignment.Title,
+                    Conditions = CombinedDto.CriteriaAssignment.Conditions,
+                    CountScore = CombinedDto.CriteriaAssignment.CountScore,
+                    Level = CombinedDto.CriteriaAssignment.Level,
+                    MaterialWorkModelId = updateWork.Id,
+                    MaterialWorkModel = updateWork
+                };
+                updateWork.CriteriaAssignments ??= new List<CriteriaAssignment>();
+                updateWork.CriteriaAssignments.Add(criteria);
 
                 task.MaterialWorkId = updateWork.Id;
                 task.MaterialWorkModel = updateWork;
 
                 _context.Tasks.Update(task);
+                await _context.CriteriaAssignments.AddAsync(criteria);
                 await _context.MaterialWorks.AddAsync(updateWork);
                 await _context.SaveChangesAsync();
 
