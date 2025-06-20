@@ -358,5 +358,63 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [HttpDelete("{taskId}/readMaterial")]
+        public async Task<ActionResult<ResponseModel>> DeleteReadTask(Guid taskId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+                try
+                {
+                    TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                    if (task == null)
+                    {
+                        return NotFound("Task not found");
+                    }
+
+                    MaterialReadModel readModel = await _context.MaterialReads.FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                    if (readModel == null)
+                    {
+                        return BadRequest("Task doesn't have any read material. Deleting is impossible.");
+                    }
+
+                    task.MaterialReadId = null;
+                    task.MaterialReadModel = null;
+
+                    _context.MaterialReads.Remove(readModel);
+                    _context.Tasks.Update(task);
+                    await _context.SaveChangesAsync();
+
+                    return Ok(new ResponseModel($"Read material {readModel.Id} deleted"));
+                }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
     }
 }
