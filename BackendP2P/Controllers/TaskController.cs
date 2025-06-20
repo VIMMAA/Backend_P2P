@@ -384,31 +384,151 @@ namespace ApiB.Controllers
             {
                 return BadRequest(new { message = "Invalid token" });
             }
-                try
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
                 {
-                    TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
-
-                    if (task == null)
-                    {
-                        return NotFound("Task not found");
-                    }
-
-                    MaterialReadModel readModel = await _context.MaterialReads.FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                    if (readModel == null)
-                    {
-                        return BadRequest("Task doesn't have any read material. Deleting is impossible.");
-                    }
-
-                    task.MaterialReadId = null;
-                    task.MaterialReadModel = null;
-
-                    _context.MaterialReads.Remove(readModel);
-                    _context.Tasks.Update(task);
-                    await _context.SaveChangesAsync();
-
-                    return Ok(new ResponseModel($"Read material {readModel.Id} deleted"));
+                    return NotFound("Task not found");
                 }
+
+                MaterialReadModel? readModel = await _context.MaterialReads.FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                if (readModel == null)
+                {
+                    return BadRequest("Task doesn't have any read material. Deleting is impossible.");
+                }
+
+                task.MaterialReadId = null;
+                task.MaterialReadModel = null;
+
+                _context.MaterialReads.Remove(readModel);
+                _context.Tasks.Update(task);
+                await _context.SaveChangesAsync();
+
+                return Ok(new ResponseModel($"Read material {readModel.Id} deleted"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [HttpPatch("{taskId}/readMaterial/change")]
+        public async Task<ActionResult<ResponseModel>> ReplaceReadTask(Guid taskId, [FromBody] TaskReadCreateDto taskRead)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                MaterialReadModel? readModel = await _context.MaterialReads.FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                if (readModel == null)
+                {
+                    return BadRequest("Task doesn't have any read material. Replacing is impossible.");
+                }
+
+                _context.MaterialReads.Remove(readModel);
+
+                MaterialReadModel updateRead = new MaterialReadModel
+                {
+                    Id = Guid.NewGuid(),
+                    TaskId = taskId,
+                    Task = task,
+                    Content = taskRead.Content
+                };
+
+                await _context.MaterialReads.AddAsync(updateRead);
+
+                task.MaterialReadId = updateRead.Id;
+                task.MaterialReadModel = updateRead;
+
+                _context.Tasks.Update(task);
+                await _context.SaveChangesAsync();
+
+                return Ok(new ResponseModel($"Read material {readModel.Id} was replaced by {updateRead.Id}"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [HttpGet("{taskId}/readMaterial")]
+        public async Task<ActionResult<MaterialReadModel>> GetReadTask(Guid taskId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                MaterialReadModel? readModel = await _context.MaterialReads.FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                if (readModel == null)
+                {
+                    return BadRequest("Task doesn't have any read material.");
+                }
+
+                return Ok(readModel);
+            }
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"\nERROR\n{ex}");
