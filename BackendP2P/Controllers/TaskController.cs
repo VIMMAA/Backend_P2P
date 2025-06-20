@@ -53,6 +53,11 @@ namespace ApiB.Controllers
                     Grades = new List<GradeModel>()
                 };
 
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline is outdated");
+                }
+
                 foreach (var studentId in task.Students)
                 {
                     if (task.Students.Count != task.Students.Distinct().Count())
@@ -185,6 +190,11 @@ namespace ApiB.Controllers
                 task.Students = dto.Students;
                 task.Topic = dto.Topic;
                 task.Deadline = dto.Deadline;
+
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline is outdated");
+                }
 
                 foreach (var studentId in task.Students)
                 {
@@ -433,6 +443,11 @@ namespace ApiB.Controllers
                     Instructions = CombinedDto.MaterialTaskWork.Instructions
                 };
 
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline is outdated");
+                }
+
                 CriteriaAssignment criteria = new CriteriaAssignment
                 {
                     Id = Guid.NewGuid(),
@@ -558,6 +573,11 @@ namespace ApiB.Controllers
                     return BadRequest("Task doesn't have any work material.");
                 }
 
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline is outdated");
+                }
+
                 materialWork.Instructions = dto.Instructions;
                 materialWork.Score = dto.Score;
                 //criterias mb
@@ -607,6 +627,11 @@ namespace ApiB.Controllers
                     MaterialWorkModelId = materialWork.Id,
                     MaterialWorkModel = materialWork
                 };
+
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline is outdated");
+                }
 
                 materialWork.CriteriaAssignments ??= new List<CriteriaAssignment>();
                 materialWork.CriteriaAssignments.Add(criteria);
@@ -679,6 +704,11 @@ namespace ApiB.Controllers
                 if (task == null)
                 {
                     return NotFound("Task not found");
+                }
+
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline is outdated");
                 }
 
                 MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
