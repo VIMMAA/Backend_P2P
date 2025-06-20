@@ -666,6 +666,52 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
+        [HttpPut("{taskId}/workMaterial/Criteria/{criteriaId}")]
+        public async Task<IActionResult> EditCriteria(Guid taskId, Guid criteriaId, [FromBody] CriteriaAssignmentCreateModel dto)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                if (materialWork == null)
+                {
+                    return BadRequest("Task doesn't have any work material.");
+                }
+
+                CriteriaAssignment? criteria = await _context.CriteriaAssignments.FirstOrDefaultAsync(u => criteriaId == u.Id);
+
+                if (criteria == null)
+                {
+                    return NotFound("Criteria not found");
+                }
+
+                criteria.Title = dto.Title;
+                criteria.Level = dto.Level;
+                criteria.Conditions = dto.Conditions;
+                criteria.CountScore = dto.CountScore;
+
+                _context.CriteriaAssignments.Update(criteria);
+                await _context.SaveChangesAsync();
+
+                return Ok(new ResponseModel("Criteria updated"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)
