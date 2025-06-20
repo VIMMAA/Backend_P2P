@@ -519,7 +519,7 @@ namespace ApiB.Controllers
                     return NotFound("Task not found");
                 }
 
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(t => t.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
 
                 if (materialWork == null)
                 {
@@ -565,6 +565,99 @@ namespace ApiB.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok(new ResponseModel("Work material is updated"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
+        [HttpPost("{taskId}/workMaterial/Criteria")]
+        public async Task<IActionResult> CreateCriteria(Guid taskId, [FromBody] CriteriaAssignmentCreateModel dto)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                if (materialWork == null)
+                {
+                    return BadRequest("Task doesn't have any work material.");
+                }
+
+                CriteriaAssignment criteria = new CriteriaAssignment
+                {
+                    Id = Guid.NewGuid(),
+                    Conditions = dto.Conditions,
+                    CountScore = dto.CountScore,
+                    Level = dto.Level,
+                    Title = dto.Title,
+                    MaterialWorkModelId = materialWork.Id,
+                    MaterialWorkModel = materialWork
+                };
+
+                materialWork.CriteriaAssignments ??= new List<CriteriaAssignment>();
+                materialWork.CriteriaAssignments.Add(criteria);
+
+                await _context.CriteriaAssignments.AddAsync(criteria);
+                _context.MaterialWorks.Update(materialWork);
+                await _context.SaveChangesAsync();
+
+                return Ok(new ResponseModel("Criteria added"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(ResponseModel))]
+        [HttpDelete("{taskId}/workMaterial/Criteria/{criteriaId}")]
+        public async Task<IActionResult> DeleteCriteria(Guid taskId, Guid criteriaId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                if (materialWork == null)
+                {
+                    return BadRequest("Task doesn't have any work material.");
+                }
+
+                CriteriaAssignment? criteria = await _context.CriteriaAssignments.FirstOrDefaultAsync(u => criteriaId == u.Id);
+
+                if (criteria == null)
+                {
+                    return NotFound("Criteria not found");
+                }
+
+                materialWork.CriteriaAssignments.Remove(criteria);
+                _context.CriteriaAssignments.Remove(criteria);
+                _context.MaterialWorks.Update(materialWork);
+                await _context.SaveChangesAsync();
+                return Ok(new ResponseModel("Criteria deleted"));
             }
             catch (Exception ex)
             {
