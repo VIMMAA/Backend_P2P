@@ -32,6 +32,12 @@ namespace ApiB.Controllers
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
 
+            IActionResult? httpResult = IsForbid(false, courseId);
+            if (httpResult != null)
+            {
+                return httpResult;
+            }
+
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -96,7 +102,7 @@ namespace ApiB.Controllers
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TaskCreatedModel))]
         [HttpGet("{taskId}")]
-        public async Task<IActionResult> GetTask(Guid courseId, Guid taskId)
+        public async Task<IActionResult> GetTask(Guid taskId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
@@ -104,6 +110,9 @@ namespace ApiB.Controllers
             try
             {
                 TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(g => g.Grades).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                IsForbid(true, task.CourseId);
+
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
 
@@ -154,35 +163,19 @@ namespace ApiB.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
         [HttpPut("{taskId}")]
-        public async Task<IActionResult> EditTask(Guid courseId, Guid taskId, [FromBody] TaskEditModel dto)
+        public async Task<IActionResult> EditTask(Guid taskId, [FromBody] TaskEditModel dto)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (_tokenRevocationService.IsTokenRevoked(token))
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Invalid token" });
-            }
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
 
             try
             {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
                 TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(g => g.Grades).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                IsForbid(false, task.CourseId);
+
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
 
@@ -220,14 +213,17 @@ namespace ApiB.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
         [HttpDelete("{taskId}")]
-        public async Task<IActionResult> DeleteTask(Guid courseId, Guid taskId)
+        public async Task<IActionResult> DeleteTask(Guid taskId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
 
             try
             {
+
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                IsForbid(false, task.CourseId);
 
                 if (task == null)
                 {
@@ -256,6 +252,8 @@ namespace ApiB.Controllers
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                IsForbid(false, task.CourseId);
 
                 if (task == null)
                 {
@@ -301,6 +299,8 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
+                IsForbid(false, task.CourseId);
+
                 if (task == null)
                 {
                     return NotFound("Task not found");
@@ -339,6 +339,8 @@ namespace ApiB.Controllers
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                IsForbid(false, task.CourseId);
 
                 if (task == null)
                 {
@@ -390,6 +392,8 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
+                IsForbid(true, task.CourseId);
+
                 if (task == null)
                 {
                     return NotFound("Task not found");
@@ -421,6 +425,8 @@ namespace ApiB.Controllers
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                IsForbid(false, task.CourseId);
 
                 if (task == null)
                 {
@@ -489,6 +495,8 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
+                IsForbid(false, task.CourseId);
+
                 if (task == null)
                 {
                     return NotFound("Task not found");
@@ -529,6 +537,8 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
+                IsForbid(true, task.CourseId);
+
                 if (task == null)
                 {
                     return NotFound("Task not found");
@@ -560,6 +570,8 @@ namespace ApiB.Controllers
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                IsForbid(false, task.CourseId);
 
                 if (task == null)
                 {
@@ -604,6 +616,8 @@ namespace ApiB.Controllers
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                IsForbid(false, task.CourseId);
 
                 if (task == null)
                 {
@@ -659,6 +673,8 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
+                IsForbid(false, task.CourseId);
+
                 if (task == null)
                 {
                     return NotFound("Task not found");
@@ -700,6 +716,8 @@ namespace ApiB.Controllers
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                IsForbid(false, task.CourseId);
 
                 if (task == null)
                 {
@@ -766,6 +784,29 @@ namespace ApiB.Controllers
             if (userIdClaim == null)
             {
                 return BadRequest(new { message = "Invalid token" });
+            }
+
+            return null;
+        }
+        private IActionResult? IsForbid(bool isStudent, Guid courseId)
+        {
+            var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            UserCorse? userCorse =  _context.UsersCorses.FirstOrDefault(x => x.UserId == userId && x.CourseId == courseId);
+
+            if (userCorse == null)
+            {
+                return Forbid();
+            }
+
+            
+            if (!isStudent)
+            {
+                Role? role = userCorse.Role;
+                if (role == Role.Student || role == null)
+                {
+                    return Forbid();
+                }
             }
 
             return null;
