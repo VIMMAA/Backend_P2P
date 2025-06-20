@@ -15,6 +15,7 @@ public class ApplicationContext : DbContext
     public DbSet<GradeModel> Grades { get; set; }
     public DbSet<RemarkModel> Remarks { get; set; }
     public DbSet<SolutionCheck> SolutionChecks { get; set; }
+    public DbSet<CommentModel> Comments { get; set; }
 
     public bool TestConnection()
     {
