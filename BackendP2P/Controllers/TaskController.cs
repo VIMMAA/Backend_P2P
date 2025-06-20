@@ -25,36 +25,16 @@ namespace ApiB.Controllers
             _context = context;
             _tokenRevocationService = tokenRevocationService;
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TaskCreatedModel))]
         [HttpPost("{courseId}")]
-        public async Task<ActionResult<TaskCreatedModel>> CreateTask([FromBody] TaskCreateModel model, Guid courseId)
+        public async Task<IActionResult> CreateTask([FromBody] TaskCreateModel model, Guid courseId)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (_tokenRevocationService.IsTokenRevoked(token))
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Invalid token" });
-            }
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
 
             try
             {
-                var userId = Guid.Parse(userIdClaim.Value);
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 TaskModel task = new TaskModel
                 {
@@ -109,32 +89,12 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TaskCreatedModel))]
         [HttpGet("{taskId}")]
-        public async Task<ActionResult<TaskCreatedModel>> GetTask(Guid courseId, Guid taskId)
+        public async Task<IActionResult> GetTask(Guid courseId, Guid taskId)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (_tokenRevocationService.IsTokenRevoked(token))
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Invalid token" });
-            }
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
 
             try
             {
@@ -187,8 +147,9 @@ namespace ApiB.Controllers
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
         [HttpPut("{taskId}")]
-        public async Task<ActionResult<ResponseModel>> EditTask(Guid courseId, Guid taskId, [FromBody] TaskEditModel dto)
+        public async Task<IActionResult> EditTask(Guid courseId, Guid taskId, [FromBody] TaskEditModel dto)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -247,32 +208,13 @@ namespace ApiB.Controllers
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
         [HttpDelete("{taskId}")]
-        public async Task<ActionResult<ResponseModel>> DeleteTask(Guid courseId, Guid taskId)
+        public async Task<IActionResult> DeleteTask(Guid courseId, Guid taskId)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
 
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (_tokenRevocationService.IsTokenRevoked(token))
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Invalid token" });
-            }
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
@@ -294,32 +236,13 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
         [HttpPost("{taskId}/readMaterial")]
-        public async Task<ActionResult<MaterialReadModel>> CreateReadTask(Guid taskId, [FromBody] TaskReadCreateDto taskRead)
+        public async Task<IActionResult> CreateReadTask(Guid taskId, [FromBody] TaskReadCreateDto taskRead)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
 
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (_tokenRevocationService.IsTokenRevoked(token))
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Invalid token" });
-            }
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
@@ -358,32 +281,12 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
         [HttpDelete("{taskId}/readMaterial")]
-        public async Task<ActionResult<ResponseModel>> DeleteReadTask(Guid taskId)
+        public async Task<IActionResult> DeleteReadTask(Guid taskId)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (_tokenRevocationService.IsTokenRevoked(token))
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Invalid token" });
-            }
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
@@ -416,32 +319,13 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
         [HttpPatch("{taskId}/readMaterial/change")]
-        public async Task<ActionResult<ResponseModel>> ReplaceReadTask(Guid taskId, [FromBody] TaskReadCreateDto taskRead)
+        public async Task<IActionResult> ReplaceReadTask(Guid taskId, [FromBody] TaskReadCreateDto taskRead)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
 
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (_tokenRevocationService.IsTokenRevoked(token))
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Invalid token" });
-            }
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
@@ -485,32 +369,13 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
         [HttpGet("{taskId}/readMaterial")]
-        public async Task<ActionResult<MaterialReadModel>> GetReadTask(Guid taskId)
+        public async Task<IActionResult> GetReadTask(Guid taskId)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
 
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (_tokenRevocationService.IsTokenRevoked(token))
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Invalid token" });
-            }
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
@@ -536,32 +401,13 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
         [HttpPost("{taskId}/workMaterial")]
-        public async Task<ActionResult<MaterialReadModel>> CreateWorkTask(Guid taskId, [FromBody] TaskWorkCreateModel taskWork)
+        public async Task<IActionResult> CreateWorkTask(Guid taskId, [FromBody] TaskWorkCreateModel taskWork)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (_tokenRevocationService.IsTokenRevoked(token))
-            {
-                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Invalid token" });
-            }
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
@@ -602,6 +448,34 @@ namespace ApiB.Controllers
 
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
+        }
+        private IActionResult? AuthenticateService()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+
+            return null;
         }
     }
 }

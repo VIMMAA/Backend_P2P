@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "D:\\Programming\\Projects\\Backend_P2P\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\taskcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\taskcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\db\\criteriaassignments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\models\\db\\criteriaassignments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\migrations\\20250620034654_intscore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\migrations\\20250620034654_intscore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -21,14 +29,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\context.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\context.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\db\\criteriaassignments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\models\\db\\criteriaassignments.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\taskcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\taskcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\request\\taskworkcreatemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -102,73 +102,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 11,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "20250620034654_intscore.Designer.cs",
-              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\20250620034654_intscore.Designer.cs",
-              "RelativeDocumentMoniker": "BackendP2P\\Migrations\\20250620034654_intscore.Designer.cs",
-              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\20250620034654_intscore.Designer.cs",
-              "RelativeToolTip": "BackendP2P\\Migrations\\20250620034654_intscore.Designer.cs",
-              "ViewState": "AgIAACQBAAAAAAAAAAAAwDABAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T03:47:56.884Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ApplicationContextModelSnapshot.cs",
-              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\ApplicationContextModelSnapshot.cs",
-              "RelativeDocumentMoniker": "BackendP2P\\Migrations\\ApplicationContextModelSnapshot.cs",
-              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\ApplicationContextModelSnapshot.cs",
-              "RelativeToolTip": "BackendP2P\\Migrations\\ApplicationContextModelSnapshot.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAmwA8AAAA2AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T03:47:40.467Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "20250620034654_intscore.cs",
-              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\20250620034654_intscore.cs",
-              "RelativeDocumentMoniker": "BackendP2P\\Migrations\\20250620034654_intscore.cs",
-              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\20250620034654_intscore.cs",
-              "RelativeToolTip": "BackendP2P\\Migrations\\20250620034654_intscore.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAqwBwAAAAkAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T03:47:36.209Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Context.cs",
-              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Context.cs",
-              "RelativeDocumentMoniker": "BackendP2P\\Context.cs",
-              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Context.cs",
-              "RelativeToolTip": "BackendP2P\\Context.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T03:46:10.995Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "TaskWorkCreateModel.cs",
-              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
-              "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
-              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
-              "RelativeToolTip": "BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T03:36:48.208Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{e506b91c-c606-466a-90a9-123d1d1e12b3}"
@@ -187,7 +122,69 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
+              "Title": "CriteriaAssignments.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
+              "RelativeToolTip": "BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-20T07:26:18.198Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ApplicationContextModelSnapshot.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\ApplicationContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Migrations\\ApplicationContextModelSnapshot.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\ApplicationContextModelSnapshot.cs",
+              "RelativeToolTip": "BackendP2P\\Migrations\\ApplicationContextModelSnapshot.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAmwA8AAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-20T03:47:40.467Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "20250620034654_intscore.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\20250620034654_intscore.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Migrations\\20250620034654_intscore.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\20250620034654_intscore.cs",
+              "RelativeToolTip": "BackendP2P\\Migrations\\20250620034654_intscore.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAqwBoAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-20T03:47:36.209Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Context.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Context.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Context.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Context.cs",
+              "RelativeToolTip": "BackendP2P\\Context.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-20T03:46:10.995Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "TaskWorkCreateModel.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
+              "RelativeToolTip": "BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-20T03:36:48.208Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "MaterialWorkModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\MaterialWorkModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\MaterialWorkModel.cs",
@@ -195,8 +192,7 @@
               "RelativeToolTip": "BackendP2P\\Models\\DB\\MaterialWorkModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAkAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T03:14:43.169Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-20T03:14:43.169Z"
             },
             {
               "$type": "Document",
@@ -208,21 +204,32 @@
               "RelativeToolTip": "BackendP2P\\Models\\Request\\TaskReadCreateDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-19T18:42:17.594Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-19T18:42:17.594Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 0,
               "Title": "TaskController.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\TaskController.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Controllers\\TaskController.cs",
               "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\TaskController.cs",
               "RelativeToolTip": "BackendP2P\\Controllers\\TaskController.cs",
-              "ViewState": "AgIAACkCAAAAAAAAAAAQwDYCAAAZAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAkwCEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-17T14:50:29.233Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "20250620034654_intscore.Designer.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\20250620034654_intscore.Designer.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Migrations\\20250620034654_intscore.Designer.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\20250620034654_intscore.Designer.cs",
+              "RelativeToolTip": "BackendP2P\\Migrations\\20250620034654_intscore.Designer.cs",
+              "ViewState": "AgIAACQBAAAAAAAAAAAAwDABAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-20T03:47:56.884Z"
             },
             {
               "$type": "Document",
@@ -259,19 +266,6 @@
               "ViewState": "AgIAAFAAAAAAAAAAAAArwF8AAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-17T17:51:35.118Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "CriteriaAssignments.cs",
-              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
-              "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
-              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
-              "RelativeToolTip": "BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-17T12:01:43.185Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
