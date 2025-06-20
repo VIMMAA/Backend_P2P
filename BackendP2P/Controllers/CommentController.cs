@@ -11,7 +11,7 @@ namespace BackendP2P.Controllers
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
-    //[Produces("application/json")]
+    [Produces("application/json")]
     public class CommentController : Controller
     {
         private readonly ApplicationContext _context;
@@ -27,20 +27,15 @@ namespace BackendP2P.Controllers
         [HttpPost("{taskId}")]
         public async Task<IActionResult> CommentTask(Guid taskId, [FromBody] CommentCreateModel dto)
         {
-            Console.WriteLine("Here?1");
             IActionResult? authResult = AuthenticateService();
-            Console.WriteLine("Here?2");
             if (authResult != null) return authResult;
-            Console.WriteLine("Here?3");
             Guid userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            Console.WriteLine("Here?4");
             try
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
                 if (task == null)
                 {
-                    Console.WriteLine("Here?");
                     return NotFound("Task not found");
                 }
 
@@ -69,7 +64,43 @@ namespace BackendP2P.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
+        [HttpDelete("{taskId}/{commentId}")]
+        public async Task<IActionResult> CommentDeleteTask(Guid commentId, Guid taskId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            Guid userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                CommentModel? comment = await _context.Comments.FirstOrDefaultAsync(u => u.Id == commentId && u.AuthorId == userId);
 
+                if (comment == null)
+                {
+                    return NotFound("Comment not found");
+                }
+
+                TaskModel? task = await _context.Tasks.Include(u => u.Comments).FirstOrDefaultAsync(u => u.Id == taskId);
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                task.Comments.Remove(comment);
+
+                _context.Tasks.Update(task);
+                _context.Comments.Remove(comment);
+                await _context.SaveChangesAsync();
+
+                return Ok(new ResponseModel("Comment deleted from task"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)

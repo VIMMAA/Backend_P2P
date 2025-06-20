@@ -54,8 +54,7 @@
               "RelativeToolTip": "BackendP2P\\Models\\DB\\TaskModel.cs",
               "ViewState": "AgIAACsAAAAAAAAAAAAYwD8AAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T20:56:54.818Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-20T20:56:54.818Z"
             },
             {
               "$type": "Document",
@@ -65,7 +64,7 @@
               "RelativeDocumentMoniker": "BackendP2P\\Controllers\\CommentController.cs",
               "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\CommentController.cs",
               "RelativeToolTip": "BackendP2P\\Controllers\\CommentController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAgwFUAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-20T20:34:50.23Z",
               "EditorCaption": ""
@@ -80,8 +79,7 @@
               "RelativeToolTip": "BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAqwAgAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-20T07:26:18.198Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-20T07:26:18.198Z"
             },
             {
               "$type": "Document",
@@ -93,8 +91,7 @@
               "RelativeToolTip": "BackendP2P\\Controllers\\TaskController.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAABAAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-17T14:50:29.233Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-17T14:50:29.233Z"
             }
           ]
         }
