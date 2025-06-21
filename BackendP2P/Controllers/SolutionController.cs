@@ -1,112 +1,135 @@
-﻿//using Api.Models;
-//using BackendP2P.Models.Request;
-//using Domain.Enums;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
-//using System.Security.Claims;
+﻿using Api.Models;
+using BackendP2P.Models.Request;
+using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
-//namespace BackendP2P.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [Authorize]
-//    [ApiController]
-//    [Produces("application/json")]
-//    public class SolutionController : Controller
-//    {
-//        private readonly ApplicationContext _context;
-//        private readonly ITokenRevocationService _tokenRevocationService;
-//        public SolutionController(ApplicationContext context, ITokenRevocationService tokenRevocationService)
-//        {
-//            _context = context;
-//            _tokenRevocationService = tokenRevocationService;
-//        }
+namespace BackendP2P.Controllers
+{
+    [Route("api/[controller]")]
+    [Authorize]
+    [ApiController]
+    [Produces("application/json")]
+    public class SolutionController : Controller
+    {
+        private readonly ApplicationContext _context;
+        private readonly ITokenRevocationService _tokenRevocationService;
+        public SolutionController(ApplicationContext context, ITokenRevocationService tokenRevocationService)
+        {
+            _context = context;
+            _tokenRevocationService = tokenRevocationService;
+        }
 
-//        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
-//        [HttpPost("{courseId}")]
-//        public async Task<IActionResult> CreateSolution([FromBody] SolutionCreateModel model, Guid courseId)
-//        {
-//            IActionResult? authResult = AuthenticateService();
-//            if (authResult != null) return authResult;
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
+        [HttpPost("{taskId}")]
+        public async Task<IActionResult> CreateSolution([FromBody] SolutionCreateModel model, Guid taskId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
 
-//            IActionResult? httpResult = IsForbid(true, courseId);
-//            if (httpResult != null)
-//            {
-//                return httpResult;
-//            }
-//            try
-//            {
-//                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-//                SolutionModel solution = new SolutionModel
-//                {
-//                    Id = Guid.NewGuid(),
-//                    StudentId = userId,
-//                    Student = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId),
-//                    SubmissionTime = DateTime.UtcNow,
-//                    AttachmentPath = model.AttachmentPath,
-//                    Content = model.Content,
-//                    Task = 
-//                };
-//            }
-//            catch (Exception ex)
-//            {
-//                Console.Error.WriteLine($"\nERROR\n{ex}");
+                TaskModel task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
 
-//                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-//            }
-//        }
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
-//        private IActionResult? AuthenticateService()
-//        {
-//            if (!User.Identity.IsAuthenticated)
-//            {
-//                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-//            }
+                if (!task.Students.Contains(userId))
+                {
+                    return StatusCode(403, "Student is not on the list to submit task");
+                }
 
-//            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline expired");
+                }
 
-//            if (_tokenRevocationService.IsTokenRevoked(token))
-//            {
-//                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
-//            }
+                SolutionModel solution = new SolutionModel
+                {
+                    Id = Guid.NewGuid(),
+                    StudentId = userId,
+                    Student = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId),
+                    SubmissionTime = DateTime.UtcNow,
+                    AttachmentPath = model.AttachmentPath,
+                    Content = model.Content,
+                    TaskId = taskId,
+                    Task = task
+                };
 
-//            if (!ModelState.IsValid)
-//            {
-//                return BadRequest(ModelState);
-//            }
+                task.Solutions ??= new List<SolutionModel>();
+                task.Solutions.Add(solution);
 
-//            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+                _context.Tasks.Update(task);
+                await _context.Solutions.AddAsync(solution);
+                await _context.SaveChangesAsync();
 
-//            if (userIdClaim == null)
-//            {
-//                return BadRequest(new { message = "Invalid token" });
-//            }
+                return Ok(new ResponseModel("Solution posted"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
 
-//            return null;
-//        }
-//        private IActionResult? IsForbid(bool isStudent, Guid courseId)
-//        {
-//            var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
 
-//            UserCorse? userCorse = _context.UsersCorses.FirstOrDefault(x => x.UserId == userId && x.CourseId == courseId);
+        private IActionResult? AuthenticateService()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
 
-//            if (userCorse == null)
-//            {
-//                return Forbid();
-//            }
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Неавторизованный доступ" });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+
+            return null;
+        }
+        private IActionResult? IsForbid(bool isStudent, Guid courseId)
+        {
+            var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            UserCorse? userCorse = _context.UsersCorses.FirstOrDefault(x => x.UserId == userId && x.CourseId == courseId);
+
+            if (userCorse == null)
+            {
+                return Forbid();
+            }
 
 
-//            if (!isStudent)
-//            {
-//                Role? role = userCorse.Role;
-//                if (role == Role.Student || role == null)
-//                {
-//                    return Forbid();
-//                }
-//            }
+            if (!isStudent)
+            {
+                Role? role = userCorse.Role;
+                if (role == Role.Student || role == null)
+                {
+                    return Forbid();
+                }
+            }
 
-//            return null;
-//        }
-//    }
-//}
+            return null;
+        }
+    }
+}
