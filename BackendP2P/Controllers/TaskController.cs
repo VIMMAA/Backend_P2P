@@ -101,7 +101,7 @@ namespace ApiB.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TaskCreatedModel))]
-        [HttpGet("{taskId}")]
+        [HttpGet("{taskId}")]//check for forbid error
         public async Task<IActionResult> GetTask(Guid taskId)
         {
             IActionResult? authResult = AuthenticateService();
@@ -111,7 +111,11 @@ namespace ApiB.Controllers
             {
                 TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(g => g.Grades).FirstOrDefaultAsync(t => t.Id == taskId);
 
-                IsForbid(true, task.CourseId);
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
@@ -174,7 +178,11 @@ namespace ApiB.Controllers
 
                 TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(g => g.Grades).FirstOrDefaultAsync(t => t.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
@@ -223,7 +231,11 @@ namespace ApiB.Controllers
 
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -253,7 +265,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -299,7 +315,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -340,7 +360,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -392,7 +416,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(true, task.CourseId);
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -426,7 +454,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -495,7 +527,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -537,7 +573,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(true, task.CourseId);
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -571,7 +611,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -617,7 +661,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -673,7 +721,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
@@ -717,7 +769,11 @@ namespace ApiB.Controllers
             {
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
-                IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
 
                 if (task == null)
                 {
