@@ -33,7 +33,7 @@ namespace BackendP2P.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+                TaskModel task = await _context.Tasks.Include(t => t.MaterialWorkModel).Include(t => t.Author).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
                 if (httpResult != null)
@@ -263,8 +263,6 @@ namespace BackendP2P.Controllers
                     solutions = task.Solutions.ToList();
                 }
 
-                    //List<SolutionModel> solutions = await _context.Solutions.Where(solution => !(solution.StudentId == userId || _context.UsersCorses.Any(u => u.UserId == userId && (u.Role == Role.Teacher || u.Role == Role.Owner)))).ToListAsync();
-
                 return Ok(solutions);
             }
             catch (Exception ex)
@@ -273,6 +271,8 @@ namespace BackendP2P.Controllers
 
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
+
+
         }
         
         private IActionResult? AuthenticateService()

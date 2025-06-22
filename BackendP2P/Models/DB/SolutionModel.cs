@@ -17,7 +17,5 @@ namespace Api.Models
         public Guid TaskId { get; set; }
         [JsonIgnore]
         public TaskModel? Task { get; set; }
-        [JsonIgnore]
-        public CheckPackage CheckPackage { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ApiB.Controllers
 {
@@ -73,6 +74,18 @@ namespace ApiB.Controllers
 
                 }
 
+                CheckPackage checkPackage = new CheckPackage
+                {
+                    Id = Guid.NewGuid(),
+                    Deadline = task.Deadline.AddDays(2),
+                    Instructions = task.MaterialWorkModel.Instructions,
+                    User = task.Author,
+                    UserId = userId,
+                    Task = task,
+                    TaskId = task.Id,
+                    SolutionChecks = new List<SolutionCheck>()
+                };
+
                 TaskCreatedModel answer = new TaskCreatedModel
                 {
                     Id = task.Id,
@@ -84,12 +97,12 @@ namespace ApiB.Controllers
                     CreateTime = task.CreateTime,
                     Deadline = task.Deadline,
                     Check = task.Check,
-                    Comments = new List<CommentModel>(),
-                    Solutions = new List<SolutionModel>(),
-                    Grades = new List<GradeModel>()
+                    Comments = task.Comments,
+                    Solutions = task.Solutions,
                 };
 
                 await _context.Tasks.AddAsync(task);
+                await _context.CheckPackages.AddAsync(checkPackage);
                 await _context.SaveChangesAsync();
 
                 return Ok(answer);
@@ -110,7 +123,7 @@ namespace ApiB.Controllers
 
             try
             {
-                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).FirstOrDefaultAsync(t => t.Id == taskId);
+                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.MaterialWorkModel).ThenInclude(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
                 if (httpResult != null)
@@ -139,7 +152,8 @@ namespace ApiB.Controllers
                         AuthorId = c.AuthorId,
                         CreateTime = c.CreateTime
                     }).ToList(),
-                    Solutions = task.Solutions.Select(s => new SolutionModel { 
+                    Solutions = task.Solutions.Select(s => new SolutionModel
+                    {
                         Id = s.Id,
                         SubmissionTime = s.SubmissionTime,
                         StudentId = s.StudentId,
@@ -149,6 +163,7 @@ namespace ApiB.Controllers
                     }).ToList(),
                     MaterialReadId = task.MaterialReadId,
                     MaterialWorkId = task.MaterialWorkId,
+                    Grades = task.MaterialWorkModel?.CriteriaAssignments?.Where(t => t.GradeModel != null).Select(c => c.GradeModel).Distinct().ToList() ?? new List<GradeModel>()
                 };
 
                 return Ok(answer);
@@ -190,7 +205,7 @@ namespace ApiB.Controllers
 
                 if (task.Deadline < DateTime.UtcNow)
                 {
-                    return BadRequest("Deadline is outdated");
+                    return BadRequest("Deadline expired");
                 }
 
                 foreach (var studentId in task.Students)
@@ -632,7 +647,6 @@ namespace ApiB.Controllers
 
                 materialWork.Instructions = dto.Instructions;
                 materialWork.Score = dto.Score;
-                //criterias mb
                 _context.MaterialWorks.Update(materialWork);
                 await _context.SaveChangesAsync();
 
@@ -668,7 +682,7 @@ namespace ApiB.Controllers
                     return NotFound("Task not found");
                 }
 
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(u => u.TaskId == taskId);
 
                 if (materialWork == null)
                 {
@@ -683,7 +697,8 @@ namespace ApiB.Controllers
                     Level = dto.Level,
                     Title = dto.Title,
                     MaterialWorkModelId = materialWork.Id,
-                    MaterialWorkModel = materialWork
+                    MaterialWorkModel = materialWork,
+                    GradeModel = materialWork.CriteriaAssignments?.FirstOrDefault(c => c.GradeModel != null)?.GradeModel
                 };
 
                 if (task.Deadline < DateTime.UtcNow)
@@ -742,7 +757,7 @@ namespace ApiB.Controllers
                     return NotFound("Criteria not found");
                 }
 
-                materialWork.CriteriaAssignments.Remove(criteria);
+                materialWork?.CriteriaAssignments?.Remove(criteria);
                 _context.CriteriaAssignments.Remove(criteria);
                 _context.MaterialWorks.Update(materialWork);
                 await _context.SaveChangesAsync();

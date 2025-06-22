@@ -16,6 +16,7 @@ public class ApplicationContext : DbContext
     public DbSet<RemarkModel> Remarks { get; set; }
     public DbSet<SolutionCheck> SolutionChecks { get; set; }
     public DbSet<CommentModel> Comments { get; set; }
+    public DbSet<CheckPackage> CheckPackages { get; set; }
 
     public bool TestConnection()
     {

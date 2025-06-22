@@ -10,6 +10,7 @@ public class MaterialWorkModel : Entity
     public int Score { get; set; }
     public DateTime Deadline { get; set; }
     public string Instructions { get; set; }
+    [JsonIgnore]
     public List<CriteriaAssignment>? CriteriaAssignments { get; set; }
     public Guid TaskId { get; set; }
     [JsonIgnore]
