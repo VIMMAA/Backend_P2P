@@ -3,8 +3,24 @@
   "WorkspaceRootPath": "D:\\Programming\\Projects\\Backend_P2P\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\taskcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\taskcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\db\\taskmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\models\\db\\taskmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\solutioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\solutioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\enums\\check.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\enums\\check.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\enums\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\enums\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -35,15 +51,63 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "TaskController.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\TaskController.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Controllers\\TaskController.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\TaskController.cs",
+              "RelativeToolTip": "BackendP2P\\Controllers\\TaskController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAIQAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-22T14:58:07.88Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TaskModel.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\TaskModel.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\TaskModel.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\TaskModel.cs",
+              "RelativeToolTip": "BackendP2P\\Models\\DB\\TaskModel.cs",
+              "ViewState": "AgIAACoAAAAAAAAAAAA0wDkAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-22T14:53:58.003Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Role.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Enums\\Role.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Enums\\Role.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Enums\\Role.cs",
+              "RelativeToolTip": "BackendP2P\\Enums\\Role.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-22T14:52:33.357Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Check.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Enums\\Check.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Enums\\Check.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Enums\\Check.cs",
+              "RelativeToolTip": "BackendP2P\\Enums\\Check.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-22T14:52:31.584Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "SolutionController.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\SolutionController.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Controllers\\SolutionController.cs",
               "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\SolutionController.cs",
               "RelativeToolTip": "BackendP2P\\Controllers\\SolutionController.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAA8AAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-21T03:13:00.939Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-21T03:13:00.939Z"
             }
           ]
         }

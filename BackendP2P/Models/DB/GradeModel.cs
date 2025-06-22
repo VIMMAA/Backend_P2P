@@ -13,10 +13,8 @@ public class GradeModel : Entity
     public Guid StudentId { get; set; }
     [JsonIgnore]
     public UserModel Student { get; set; }
-    [JsonIgnore]//временно
-    public Guid SolutionCheckId { get; set; }
+    [JsonIgnore]
+    public List<CriteriaAssignment> CriteriaAssignments { get; set; }
     [JsonIgnore]
     public SolutionCheck SolutionCheck { get; set; }
-    [JsonIgnore]
-    public TaskModel Task { get; set; }
 }

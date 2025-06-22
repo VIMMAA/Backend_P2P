@@ -11,7 +11,6 @@ public class RemarkModel : Entity
     public Guid AuthorId { get; set; }
     [JsonIgnore]
     public UserModel Author { get; set; }
-    public Guid SolutionCheckId { get; set; }
     [JsonIgnore]
     public SolutionCheck SolutionCheck { get; set; }
 }

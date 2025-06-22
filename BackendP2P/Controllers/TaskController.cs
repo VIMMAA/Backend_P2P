@@ -56,8 +56,7 @@ namespace ApiB.Controllers
                     Deadline = model.Deadline,
                     Check = model.isP2P ? Check.P2P : Check.TeacherOnly,
                     Comments = new List<CommentModel>(),
-                    Solutions = new List<SolutionModel>(),
-                    Grades = new List<GradeModel>()
+                    Solutions = new List<SolutionModel>()
                 };
 
                 if (task.Deadline < DateTime.UtcNow)
@@ -111,7 +110,7 @@ namespace ApiB.Controllers
 
             try
             {
-                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(g => g.Grades).FirstOrDefaultAsync(t => t.Id == taskId);
+                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
                 if (httpResult != null)
@@ -148,13 +147,6 @@ namespace ApiB.Controllers
                         AttachmentPath = s.AttachmentPath,
                         TaskId = s.TaskId,
                     }).ToList(),
-                    Grades = task.Grades.Select(g => new GradeModel
-                    {
-                        Id = g.Id,
-                        TeacherId = g.TeacherId,
-                        Score = g.Score,
-                        StudentId = g.StudentId,
-                    }).ToList(),
                     MaterialReadId = task.MaterialReadId,
                     MaterialWorkId = task.MaterialWorkId,
                 };
@@ -180,7 +172,7 @@ namespace ApiB.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(g => g.Grades).FirstOrDefaultAsync(t => t.Id == taskId);
+                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(false, task.CourseId);
                 if (httpResult != null)

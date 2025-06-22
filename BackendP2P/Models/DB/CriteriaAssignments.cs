@@ -13,4 +13,8 @@ public class CriteriaAssignment : Entity//раньше было название CriteriaAssignmen
     public Guid MaterialWorkModelId { get; set; }
     [JsonIgnore]
     public MaterialWorkModel? MaterialWorkModel { get; set; }
+    public Guid? GradeModelId { get; set; }
+    [JsonIgnore]
+    public GradeModel? GradeModel { get; set; }
+
 }

@@ -274,6 +274,7 @@ namespace BackendP2P.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)
