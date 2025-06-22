@@ -193,6 +193,47 @@ namespace BackendP2P.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SolutionModel))]
+        [HttpGet("{taskId}/{solutionId}")]
+        public async Task<IActionResult> GetSolution(Guid taskId, Guid solutionId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                TaskModel task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
+
+                SolutionModel solution = await _context.Solutions.FirstOrDefaultAsync(solution => solution.Id == solutionId);
+
+                if (solution == null)
+                {
+                    return NotFound("Solution not found");
+                }
+
+                if (!(solution.StudentId == userId || await _context.UsersCorses.AnyAsync(u => u.UserId == userId && (u.Role == Role.Teacher || u.Role == Role.Owner))))
+                {
+                    return StatusCode(403, "You are not an author student nor an owner nor a teacher");
+                }
+
+                return Ok(solution);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)
