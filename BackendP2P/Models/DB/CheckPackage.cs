@@ -10,7 +10,7 @@ namespace Api.Models
         [JsonIgnore]
         public UserModel User { get; set; }
         public DateTime Deadline { get; set; }
-        public string Instructions { get; set; }
+        public string? Instructions { get; set; }
         public Guid TaskId { get; set; }
         [JsonIgnore]
         public TaskModel Task { get; set; }

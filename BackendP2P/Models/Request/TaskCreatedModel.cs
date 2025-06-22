@@ -20,7 +20,6 @@ namespace BackendP2P.Models.Request
         public Guid? MaterialReadId { get; set; }
         public List<SolutionModel>? Solutions { get; set; }
         public required List<CommentModel>? Comments { get; set; }
-        public List<GradeModel> Grades { get; set; }
         
     }
 }

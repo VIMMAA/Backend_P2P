@@ -57,7 +57,7 @@ namespace ApiB.Controllers
                     Deadline = model.Deadline,
                     Check = model.isP2P ? Check.P2P : Check.TeacherOnly,
                     Comments = new List<CommentModel>(),
-                    Solutions = new List<SolutionModel>()
+                    Solutions = new List<SolutionModel>(),
                 };
 
                 if (task.Deadline < DateTime.UtcNow)
@@ -73,18 +73,23 @@ namespace ApiB.Controllers
                         return BadRequest(new { message = "At least one of the students not found on this course" });
 
                 }
-
-                CheckPackage checkPackage = new CheckPackage
+                
+                if (task.Check == Check.P2P)
                 {
-                    Id = Guid.NewGuid(),
-                    Deadline = task.Deadline.AddDays(2),
-                    Instructions = task.MaterialWorkModel.Instructions,
-                    User = task.Author,
-                    UserId = userId,
-                    Task = task,
-                    TaskId = task.Id,
-                    SolutionChecks = new List<SolutionCheck>()
-                };
+                    CheckPackage checkPackage = new CheckPackage
+                    {
+                        Id = Guid.NewGuid(),
+                        Deadline = task.Deadline.AddDays(2),
+                        Instructions = null,
+                        User = task.Author,
+                        UserId = userId,
+                        Task = task,
+                        TaskId = task.Id,
+                        SolutionChecks = new List<SolutionCheck>()
+                    };
+
+                    await _context.CheckPackages.AddAsync(checkPackage);
+                }
 
                 TaskCreatedModel answer = new TaskCreatedModel
                 {
@@ -102,7 +107,6 @@ namespace ApiB.Controllers
                 };
 
                 await _context.Tasks.AddAsync(task);
-                await _context.CheckPackages.AddAsync(checkPackage);
                 await _context.SaveChangesAsync();
 
                 return Ok(answer);
@@ -125,14 +129,15 @@ namespace ApiB.Controllers
             {
                 TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.MaterialWorkModel).ThenInclude(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
+                if (task == null)
+                    return NotFound(new { message = "Task not found" });
+
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
                 if (httpResult != null)
                 {
                     return httpResult;
                 }
 
-                if (task == null)
-                    return NotFound(new { message = "Task not found" });
 
                 TaskCreatedModel answer = new TaskCreatedModel
                 {
@@ -162,8 +167,7 @@ namespace ApiB.Controllers
                         TaskId = s.TaskId,
                     }).ToList(),
                     MaterialReadId = task.MaterialReadId,
-                    MaterialWorkId = task.MaterialWorkId,
-                    Grades = task.MaterialWorkModel?.CriteriaAssignments?.Where(t => t.GradeModel != null).Select(c => c.GradeModel).Distinct().ToList() ?? new List<GradeModel>()
+                    MaterialWorkId = task.MaterialWorkId
                 };
 
                 return Ok(answer);
@@ -189,15 +193,15 @@ namespace ApiB.Controllers
 
                 TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).FirstOrDefaultAsync(t => t.Id == taskId);
 
+                if (task == null)
+                    return NotFound(new { message = "Task not found" });
+
+
                 IActionResult? httpResult = IsForbid(false, task.CourseId);
                 if (httpResult != null)
                 {
                     return httpResult;
                 }
-
-                if (task == null)
-                    return NotFound(new { message = "Task not found" });
-
                 task.Name = dto.Name;
                 task.Students = dto.Students;
                 task.Topic = dto.Topic;
@@ -242,16 +246,17 @@ namespace ApiB.Controllers
 
                 TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
 
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
                 IActionResult? httpResult = IsForbid(false, task.CourseId);
                 if (httpResult != null)
                 {
                     return httpResult;
                 }
 
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
 
                 _context.Tasks.Remove(task);
                 await _context.SaveChangesAsync();
