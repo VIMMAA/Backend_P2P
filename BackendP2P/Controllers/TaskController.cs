@@ -54,6 +54,7 @@ namespace ApiB.Controllers
                     Topic = model.Topic,
                     CreateTime = DateTime.UtcNow,
                     Deadline = model.Deadline,
+                    Check = model.isP2P ? Check.P2P : Check.TeacherOnly,
                     Comments = new List<CommentModel>(),
                     Solutions = new List<SolutionModel>(),
                     Grades = new List<GradeModel>()
@@ -83,6 +84,7 @@ namespace ApiB.Controllers
                     Topic = task.Topic,
                     CreateTime = task.CreateTime,
                     Deadline = task.Deadline,
+                    Check = task.Check,
                     Comments = new List<CommentModel>(),
                     Solutions = new List<SolutionModel>(),
                     Grades = new List<GradeModel>()
@@ -130,6 +132,7 @@ namespace ApiB.Controllers
                     Topic = task.Topic,
                     CreateTime = task.CreateTime,
                     Deadline = task.Deadline,
+                    Check = task.Check,
                     Comments = task.Comments.Select(c => new CommentModel
                     {
                         Id = c.Id,

@@ -1,5 +1,6 @@
 ﻿using Api.Models;
 using Domain.Entities;
+using Domain.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BackendP2P.Models.Request
@@ -14,10 +15,12 @@ namespace BackendP2P.Models.Request
         public string Topic { get; set; } = default!;
         public required DateTime CreateTime { get; set; }
         public DateTime Deadline { get; set; }
+        public Check Check { get; set; }
         public Guid? MaterialWorkId { get; set; }
         public Guid? MaterialReadId { get; set; }
         public List<SolutionModel>? Solutions { get; set; }
         public required List<CommentModel>? Comments { get; set; }
         public List<GradeModel> Grades { get; set; }
+        
     }
 }

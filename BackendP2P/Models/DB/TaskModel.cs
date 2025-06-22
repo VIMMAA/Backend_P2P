@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Domain.Abstractions;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Api.Models;
 
@@ -49,6 +50,8 @@ public class TaskModel : Entity
     //Deadline
     public DateTime Deadline { get; set; }
     //Deadline
+
+    public Check Check { get; set; }
 
     //Materials
     public Guid? MaterialReadId { get; set; }

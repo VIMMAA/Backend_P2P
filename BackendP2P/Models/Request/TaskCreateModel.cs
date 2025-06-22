@@ -12,5 +12,6 @@ namespace Api.Models
         public List<Guid> Students { get; set; }
         public string Topic { get; set; } = default!;
         public DateTime Deadline { get; set; }
+        public bool isP2P { get; set; }
     }
 }
