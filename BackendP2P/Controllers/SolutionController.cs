@@ -234,6 +234,46 @@ namespace BackendP2P.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SolutionModel>))]
+        [HttpGet("{taskId}/list")]
+        public async Task<IActionResult> GetSolutionList(Guid taskId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                TaskModel task = await _context.Tasks.Include(t => t.Solutions).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
+
+                List<SolutionModel> solutions = new List<SolutionModel>();
+
+                if (task.Students.Contains(userId))
+                {
+                    solutions = task.Solutions.Where(s => s.StudentId == userId).ToList();
+                } else if (await _context.UsersCorses.AnyAsync(s => s.UserId == userId && (s.Role == Role.Teacher || s.Role == Role.Owner))) {
+                    solutions = task.Solutions.ToList();
+                }
+
+                    //List<SolutionModel> solutions = await _context.Solutions.Where(solution => !(solution.StudentId == userId || _context.UsersCorses.Any(u => u.UserId == userId && (u.Role == Role.Teacher || u.Role == Role.Owner)))).ToListAsync();
+
+                return Ok(solutions);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)
