@@ -139,6 +139,7 @@ namespace ApiB.Controllers
                     }).ToList(),
                     Solutions = task.Solutions.Select(s => new SolutionModel { 
                         Id = s.Id,
+                        SubmissionTime = s.SubmissionTime,
                         StudentId = s.StudentId,
                         Content = s.Content,
                         AttachmentPath = s.AttachmentPath,
