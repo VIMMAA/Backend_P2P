@@ -518,6 +518,11 @@ namespace ApiB.Controllers
                 task.MaterialWorkId = updateWork.Id;
                 task.MaterialWorkModel = updateWork;
 
+                if (updateWork.Score < criteria.CountScore)
+                {
+                    return BadRequest($"This score = {updateWork.Score}. It's less than {criteria.CountScore}");
+                }
+
                 _context.Tasks.Update(task);
                 await _context.CriteriaAssignments.AddAsync(criteria);
                 await _context.MaterialWorks.AddAsync(updateWork);
@@ -638,7 +643,7 @@ namespace ApiB.Controllers
                     return NotFound("Task not found");
                 }
 
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(t => t.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
 
                 if (materialWork == null)
                 {
@@ -648,6 +653,11 @@ namespace ApiB.Controllers
                 if (task.Deadline < DateTime.UtcNow)
                 {
                     return BadRequest("Deadline is outdated");
+                }
+
+                if (dto.Score < materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum())
+                {
+                    return BadRequest($"This score = {dto.Score}. It's less than {materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()}");
                 }
 
                 materialWork.Instructions = dto.Instructions;
@@ -709,6 +719,11 @@ namespace ApiB.Controllers
                 if (task.Deadline < DateTime.UtcNow)
                 {
                     return BadRequest("Deadline is outdated");
+                }
+
+                if (dto.CountScore > materialWork.Score - materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum())
+                {
+                    return BadRequest($"This score = {dto.CountScore}. It's more than {materialWork.Score} - {materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()} = {materialWork.Score - materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()}");
                 }
 
                 materialWork.CriteriaAssignments ??= new List<CriteriaAssignment>();
@@ -801,7 +816,7 @@ namespace ApiB.Controllers
                     return BadRequest("Deadline is outdated");
                 }
 
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(c => c.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
 
                 if (materialWork == null)
                 {
@@ -815,15 +830,119 @@ namespace ApiB.Controllers
                     return NotFound("Criteria not found");
                 }
 
+                if (dto.CountScore > materialWork.Score - materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum())
+                {
+                    return BadRequest($"This score = {dto.CountScore}. It's more than {materialWork.Score} - {materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()} = {materialWork.Score - materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()}");
+                }
+
                 criteria.Title = dto.Title;
                 criteria.Level = dto.Level;
                 criteria.Conditions = dto.Conditions;
                 criteria.CountScore = dto.CountScore;
 
+
                 _context.CriteriaAssignments.Update(criteria);
                 await _context.SaveChangesAsync();
 
                 return Ok(new ResponseModel("Criteria updated"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CriteriaAssignment))]
+        [HttpGet("{taskId}/workMaterial/Criteria/{criteriaId}")]
+        public async Task<IActionResult> GetCriteria(Guid taskId, Guid criteriaId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline is outdated");
+                }
+
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(c => c.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                if (materialWork == null)
+                {
+                    return BadRequest("Task doesn't have any work material.");
+                }
+
+                CriteriaAssignment? criteria = await _context.CriteriaAssignments.FirstOrDefaultAsync(u => criteriaId == u.Id);
+
+                if (criteria == null)
+                {
+                    return NotFound("Criteria not found");
+                }
+
+                return Ok(criteria);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CriteriaAssignment>))]
+        [HttpGet("{taskId}/workMaterial/Criteria/List")]
+        public async Task<IActionResult> GetCriteriaList(Guid taskId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            try
+            {
+                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline is outdated");
+                }
+
+                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(c => c.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
+
+                if (materialWork == null)
+                {
+                    return BadRequest("Task doesn't have any work material.");
+                }
+
+                List<CriteriaAssignment>? criteria = materialWork.CriteriaAssignments.ToList();
+
+                if (criteria == null)
+                {
+                    return NotFound("Criteria not found");
+                }
+
+                return Ok(criteria);
             }
             catch (Exception ex)
             {
