@@ -4,7 +4,7 @@ using Domain.Entities;
 
 namespace Api.Models;
 
-public class CommentCreateModel : Entity
+public class CommentCreateModel
 {
 
     [Required]

@@ -17,8 +17,6 @@ public class CourseModel : Entity
     public required string Subject { get; set; }
 
     public required string Audience { get; set; }
-
-
     public required DateTime CreateTime { get; set; }
 
     public virtual ICollection<TaskModel> Tasks { get; set; } = new List<TaskModel>();
