@@ -141,6 +141,62 @@ namespace BackendP2P.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CommentModel))]
+        [HttpGet("{taskId}/{commentId}")]
+        public async Task<IActionResult> CommentGetTask(Guid commentId, Guid taskId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            Guid userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                CommentModel? comment = await _context.Comments.FirstOrDefaultAsync(u => u.Id == commentId);
+
+                if (comment == null)
+                {
+                    return NotFound("Comment not found");
+                }
+
+                TaskModel? task = await _context.Tasks.Include(u => u.Comments).FirstOrDefaultAsync(u => u.Id == taskId);
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                return Ok(comment);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CommentModel))]
+        [HttpGet("{taskId}/list")]
+        public async Task<IActionResult> CommentGetTaskList(Guid commentId, Guid taskId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            Guid userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                TaskModel? task = await _context.Tasks.Include(u => u.Comments).FirstOrDefaultAsync(u => u.Id == taskId);
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                return Ok(task.Comments);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)
