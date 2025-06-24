@@ -12,6 +12,8 @@ public class CourseModel : Entity
 
     public required string Name { get; set; }
 
+    public required string Owner { get; set; }
+
     public required string Chapter { get; set; }
 
     public required string Subject { get; set; }

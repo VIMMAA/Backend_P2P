@@ -64,6 +64,24 @@ public class CourseController : ControllerBase
 
         try
         {
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Недействительный токен" });
+            }
+
+            var userId = Guid.Parse(userIdClaim.Value);
+
+
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+            {
+                // Обработка случая, когда пользователь не найден
+                return NotFound("Пользователь не найден");
+            }
+
             // СДЕЛАТЬ ПРОВЕРКУ НА УНИКАЛЬНОСТЬ КОДА
             var teachersCode = GenerateRandomCode();
             var studentsCode = GenerateRandomCode();
@@ -76,18 +94,11 @@ public class CourseController : ControllerBase
                 Audience = model.Audience,
                 TeachersCode = teachersCode,
                 StudentsCode = studentsCode,
-                CreateTime = DateTime.UtcNow
+                CreateTime = DateTime.UtcNow,
+                Owner = user.FirstName + " " + user.LastName
             };
 
-            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
-            {
-                return BadRequest(new { message = "Недействительный токен" });
-            }
-
-            var userId = Guid.Parse(userIdClaim.Value);
-
+            
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
