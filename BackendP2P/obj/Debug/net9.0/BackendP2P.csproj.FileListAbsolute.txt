@@ -673,3 +673,10 @@ D:\Programming\Projects\Backend_P2P\BackendP2P\obj\Debug\net9.0\BackendP2P.genru
 D:\Programming\Projects\Backend_P2P\BackendP2P\obj\Debug\net9.0\ref\BackendP2P.dll
 D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\taskData.json
 >>>>>>> tasks
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\web.config
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\appsettings.Development.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\appsettings.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\BackendP2P.deps.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\BackendP2P.runtimeconfig.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\BackendP2P.staticwebassets.endpoints.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\taskData.json

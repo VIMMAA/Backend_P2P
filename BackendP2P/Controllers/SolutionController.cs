@@ -42,9 +42,19 @@ namespace BackendP2P.Controllers
                     return httpResult;
                 }
 
+                if (_context.UsersCorses.Where(s => s.UserId == userId && s.CourseId == task.CourseId && s.Role != Role.Student).Any())
+                {
+                    return Forbid();
+                }
+
                 if (task.Deadline < DateTime.UtcNow)
                 {
                     return BadRequest("Deadline expired");
+                }
+
+                if (task.Solutions.Any(s => s.StudentId == userId))
+                {
+                    return BadRequest("Solution already posted");
                 }
 
                 SolutionModel solution = new SolutionModel
