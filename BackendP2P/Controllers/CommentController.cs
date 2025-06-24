@@ -33,7 +33,7 @@ namespace BackendP2P.Controllers
             Guid userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             try
             {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
@@ -52,7 +52,7 @@ namespace BackendP2P.Controllers
                 task.Comments ??= new List<CommentModel>();
                 task.Comments.Add(comment);
 
-                _context.Tasks.Update(task);
+                _context.MaterialWorks.Update(task);
                 await _context.Comments.AddAsync(comment);
                 await _context.SaveChangesAsync();
 
@@ -74,7 +74,7 @@ namespace BackendP2P.Controllers
             Guid userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             try
             {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
@@ -92,7 +92,7 @@ namespace BackendP2P.Controllers
 
 
                 _context.Comments.Update(comment);
-                _context.Tasks.Update(task);
+                _context.MaterialWorks.Update(task);
                 await _context.SaveChangesAsync();
 
                 return Ok(new ResponseModel("Comment updated in task"));
@@ -119,8 +119,8 @@ namespace BackendP2P.Controllers
                 {
                     return NotFound("Comment not found");
                 }
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
-                TaskModel? task = await _context.Tasks.Include(u => u.Comments).FirstOrDefaultAsync(u => u.Id == taskId);
                 if (task == null)
                 {
                     return NotFound("Task not found");
@@ -128,7 +128,7 @@ namespace BackendP2P.Controllers
 
                 task.Comments.Remove(comment);
 
-                _context.Tasks.Update(task);
+                _context.MaterialWorks.Update(task);
                 _context.Comments.Remove(comment);
                 await _context.SaveChangesAsync();
 
@@ -158,7 +158,7 @@ namespace BackendP2P.Controllers
                     return NotFound("Comment not found");
                 }
 
-                TaskModel? task = await _context.Tasks.Include(u => u.Comments).FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
                 if (task == null)
                 {
                     return NotFound("Task not found");
@@ -173,7 +173,7 @@ namespace BackendP2P.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CommentModel))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CommentModel>))]
         [HttpGet("{taskId}/list")]
         public async Task<IActionResult> CommentGetTaskList(Guid commentId, Guid taskId)
         {
@@ -182,7 +182,8 @@ namespace BackendP2P.Controllers
             Guid userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             try
             {
-                TaskModel? task = await _context.Tasks.Include(u => u.Comments).FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+
                 if (task == null)
                 {
                     return NotFound("Task not found");

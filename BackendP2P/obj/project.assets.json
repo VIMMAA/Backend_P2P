@@ -4949,31 +4949,17 @@
     ]
   },
   "packageFolders": {
-<<<<<<< HEAD
-    "/Users/vaceslav/.nuget/packages/": {}
-=======
     "C:\\Users\\kulik\\.nuget\\packages\\": {},
     "D:\\Programming\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
->>>>>>> tasks
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-<<<<<<< HEAD
-      "projectUniqueName": "/Users/vaceslav/Documents/GitHub/Backend_P2P/BackendP2P/BackendP2P.csproj",
+      "projectUniqueName": "D:\\Programming\\Projects\\Backend_P2P\\backendp2p\\BackendP2P.csproj",
       "projectName": "BackendP2P",
-      "projectPath": "/Users/vaceslav/Documents/GitHub/Backend_P2P/BackendP2P/BackendP2P.csproj",
-      "packagesPath": "/Users/vaceslav/.nuget/packages/",
-      "outputPath": "/Users/vaceslav/Documents/GitHub/Backend_P2P/BackendP2P/obj/",
-      "projectStyle": "PackageReference",
-      "configFilePaths": [
-        "/Users/vaceslav/.nuget/NuGet/NuGet.Config"
-=======
-      "projectUniqueName": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\BackendP2P.csproj",
-      "projectName": "BackendP2P",
-      "projectPath": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\BackendP2P.csproj",
+      "projectPath": "D:\\Programming\\Projects\\Backend_P2P\\backendp2p\\BackendP2P.csproj",
       "packagesPath": "C:\\Users\\kulik\\.nuget\\packages\\",
-      "outputPath": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\obj\\",
+      "outputPath": "D:\\Programming\\Projects\\Backend_P2P\\backendp2p\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Programming\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -4982,16 +4968,12 @@
         "C:\\Users\\kulik\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
->>>>>>> tasks
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
-<<<<<<< HEAD
-=======
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
->>>>>>> tasks
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -5010,7 +4992,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.200"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net9.0": {
@@ -5072,11 +5054,7 @@
             "privateAssets": "all"
           }
         },
-<<<<<<< HEAD
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
-=======
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
->>>>>>> tasks
       }
     }
   }

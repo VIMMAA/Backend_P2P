@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-public class SolutionModel { }
-=======
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -9,7 +6,7 @@ using Domain.Entities;
 
 namespace Api.Models
 {
-    public class SolutionModel : Entity
+    public class  SolutionModel : Entity
     {
         public DateTime SubmissionTime { get; set; }
         public Guid StudentId { get; set; }
@@ -22,4 +19,3 @@ namespace Api.Models
         public TaskModel? Task { get; set; }
     }
 }
->>>>>>> tasks

@@ -24,9 +24,9 @@ public class SolutionCheck : Entity
     public Guid? RemarkId { get; set; }
     [JsonIgnore]
     public RemarkModel? Remark{ get; set; }
-    public Guid CheckPackageId { get; set; }
-    [JsonIgnore]
-    public CheckPackage CheckPackage { get; set; }
+    //public Guid CheckPackageId { get; set; }
+    //[JsonIgnore]
+    //public CheckPackage CheckPackage { get; set; }
     [Required]
     public string AttachmentPath { get; set; } = default!;
 }

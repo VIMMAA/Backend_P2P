@@ -1,8 +1,8 @@
 ﻿namespace BackendP2P.Models.Request
 {
-    public class CombinedTaskWorkAndCriteriaModels
+    public class CombinedMaterialWorkAndCriteriaModels
     {
         public TaskWorkCreateModel MaterialTaskWork { get; set; }
-        public CriteriaAssignmentCreateModel CriteriaAssignment { get; set; }
+        public List<CriteriaAssignmentCreateModel> CriteriaAssignments { get; set; }
     }
 }

@@ -26,9 +26,10 @@ namespace ApiB.Controllers
             _context = context;
             _tokenRevocationService = tokenRevocationService;
         }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TaskCreatedModel))]
-        [HttpPost("{courseId}")]
-        public async Task<IActionResult> CreateTask([FromBody] TaskCreateModel model, Guid courseId)
+        
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
+        [HttpPost("{courseId}/materialWork")]
+        public async Task<IActionResult> CreateMaterialWork([FromBody] CombinedMaterialWorkAndCriteriaModels combinedDto, Guid courseId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
@@ -43,73 +44,59 @@ namespace ApiB.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel task = new TaskModel
+                TaskWorkCreateModel taskDto = combinedDto.MaterialTaskWork;
+                List<CriteriaAssignmentCreateModel> criteriaDtos = combinedDto.CriteriaAssignments;
+
+                MaterialWorkModel task = new MaterialWorkModel
                 {
                     Id = Guid.NewGuid(),
                     AuthorId = userId,
                     Author = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId),
-                    Students = model.Students?.ToList() ?? new List<Guid>(),
                     CourseId = courseId,
                     Course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == courseId),
-                    Name = model.Name,
-                    Topic = model.Topic,
+                    Name = taskDto.Name,
+                    Topic = taskDto.Topic,
                     CreateTime = DateTime.UtcNow,
-                    Deadline = model.Deadline,
-                    Check = model.isP2P ? Check.P2P : Check.TeacherOnly,
+                    Deadline = taskDto.Deadline,
+                    Check = taskDto.isP2P ? Check.P2P : Check.TeacherOnly,
                     Comments = new List<CommentModel>(),
                     Solutions = new List<SolutionModel>(),
+                    Instructions = taskDto.Instructions
                 };
+
+                List<CriteriaAssignment> criterias = new List<CriteriaAssignment>();
+
+                foreach (CriteriaAssignmentCreateModel criteriaDto in criteriaDtos)
+                {
+                    CriteriaAssignment criteria = new CriteriaAssignment
+                    {
+                        Id = Guid.NewGuid(),
+                        CountScore = criteriaDto.CountScore,
+                        Conditions = criteriaDto.Conditions,
+                        GradeModel = null,
+                        GradeModelId = null,
+                        Level = criteriaDto.Level,
+                        Title = criteriaDto.Title,
+                        MaterialWorkModel = task,
+                        MaterialWorkModelId = task.Id
+                    };
+                    criterias.Add(criteria);
+                }
+
+                task.CriteriaAssignments = criterias;
+
+                task.Score = task.CriteriaAssignments.Select(s => s.CountScore).Sum();
 
                 if (task.Deadline < DateTime.UtcNow)
                 {
                     return BadRequest("Deadline is outdated");
                 }
 
-                foreach (var studentId in task.Students)
-                {
-                    if (task.Students.Count != task.Students.Distinct().Count())
-                        return BadRequest(new { message = "Duplicate students in the list." });
-                    if (!await _context.UsersCorses.AnyAsync(s => s.UserId == studentId && task.CourseId == s.CourseId && s.Role == Role.Student))
-                        return BadRequest(new { message = "At least one of the students not found on this course" });
-
-                }
-                
-                if (task.Check == Check.P2P)
-                {
-                    CheckPackage checkPackage = new CheckPackage
-                    {
-                        Id = Guid.NewGuid(),
-                        Deadline = task.Deadline.AddDays(2),
-                        Instructions = null,
-                        User = task.Author,
-                        UserId = userId,
-                        Task = task,
-                        TaskId = task.Id,
-                        SolutionChecks = new List<SolutionCheck>()
-                    };
-
-                    await _context.CheckPackages.AddAsync(checkPackage);
-                }
-
-                TaskCreatedModel answer = new TaskCreatedModel
-                {
-                    Id = task.Id,
-                    AuthorId = task.AuthorId,
-                    Students = task.Students,
-                    CourseId = task.CourseId,
-                    Name = task.Name,
-                    Topic = task.Topic,
-                    CreateTime = task.CreateTime,
-                    Deadline = task.Deadline,
-                    Check = task.Check,
-                    Comments = task.Comments,
-                    Solutions = task.Solutions,
-                };
-
-                await _context.Tasks.AddAsync(task);
+                await _context.MaterialWorks.AddAsync(task);
+                await _context.CriteriaAssignments.AddRangeAsync(criterias);
                 await _context.SaveChangesAsync();
 
-                return Ok(answer);
+                return Ok(task);
             }
             catch (Exception ex)
             {
@@ -118,16 +105,60 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TaskCreatedModel))]
-        [HttpGet("{taskId}")]//check for forbid error
-        public async Task<IActionResult> GetTask(Guid taskId)
+
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
+        [HttpPost("{courseId}/materialRead")]
+        public async Task<IActionResult> CreateMaterialRead([FromBody] MaterialReadCreate materialReadDto, Guid courseId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            IActionResult? httpResult = IsForbid(false, courseId);
+            if (httpResult != null)
+            {
+                return httpResult;
+            }
+
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+
+                MaterialReadModel materialRead = new MaterialReadModel
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = userId,
+                    Author = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId),
+                    CourseId = courseId,
+                    Course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == courseId),
+                    Name = materialReadDto.Name,
+                    Topic = materialReadDto.Topic,
+                    CreateTime = DateTime.UtcNow,
+                    Comments = new List<CommentModel>()
+                };
+
+                await _context.MaterialReads.AddAsync(materialRead);
+                await _context.SaveChangesAsync();
+
+                return Ok(materialRead);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
+        [HttpGet("{taskId}/materialWork")]//check for forbid error
+        public async Task<IActionResult> GetMaterialWork(Guid taskId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
 
             try
             {
-                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.MaterialWorkModel).ThenInclude(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
@@ -138,39 +169,36 @@ namespace ApiB.Controllers
                     return httpResult;
                 }
 
+                return Ok(task);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
 
-                TaskCreatedModel answer = new TaskCreatedModel
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
+        [HttpGet("{taskId}/materialRead")]//check for forbid error
+        public async Task<IActionResult> GetMaterialRead(Guid taskId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.Comments).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                    return NotFound(new { message = "Task not found" });
+
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+                if (httpResult != null)
                 {
-                    Id = task.Id,
-                    AuthorId = task.AuthorId,
-                    Students = task.Students,
-                    CourseId = task.CourseId,
-                    Name = task.Name,
-                    Topic = task.Topic,
-                    CreateTime = task.CreateTime,
-                    Deadline = task.Deadline,
-                    Check = task.Check,
-                    Comments = task.Comments.Select(c => new CommentModel
-                    {
-                        Id = c.Id,
-                        Text = c.Text,
-                        AuthorId = c.AuthorId,
-                        CreateTime = c.CreateTime
-                    }).ToList(),
-                    Solutions = task.Solutions.Select(s => new SolutionModel
-                    {
-                        Id = s.Id,
-                        SubmissionTime = s.SubmissionTime,
-                        StudentId = s.StudentId,
-                        Content = s.Content,
-                        AttachmentPath = s.AttachmentPath,
-                        TaskId = s.TaskId,
-                    }).ToList(),
-                    MaterialReadId = task.MaterialReadId,
-                    MaterialWorkId = task.MaterialWorkId
-                };
+                    return httpResult;
+                }
 
-                return Ok(answer);
+                return Ok(task);
             }
             catch (Exception ex)
             {
@@ -180,9 +208,9 @@ namespace ApiB.Controllers
             }
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
-        [HttpPut("{taskId}")]
-        public async Task<IActionResult> EditTask(Guid taskId, [FromBody] TaskEditModel dto)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
+        [HttpPut("{taskId}/materialWork")]
+        public async Task<IActionResult> EditMaterialWork(Guid taskId, [FromBody] MaterialWorkEditModel dto)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
@@ -191,7 +219,7 @@ namespace ApiB.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel task = await _context.Tasks.Include(t => t.Comments).Include(t => t.Solutions).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
@@ -203,28 +231,19 @@ namespace ApiB.Controllers
                     return httpResult;
                 }
                 task.Name = dto.Name;
-                task.Students = dto.Students;
                 task.Topic = dto.Topic;
                 task.Deadline = dto.Deadline;
+                task.Instructions = dto.Instructions;
 
                 if (task.Deadline < DateTime.UtcNow)
                 {
                     return BadRequest("Deadline expired");
                 }
 
-                foreach (var studentId in task.Students)
-                {
-                    if (task.Students.Count != task.Students.Distinct().Count())
-                        return BadRequest(new { message = "Duplicate students in the list." });
-                    if (!await _context.UsersCorses.AnyAsync(s => s.UserId == studentId && task.CourseId == s.CourseId && s.Role == Role.Student))
-                        return BadRequest(new { message = "One of the students not found in StudentCorse" });
-
-                }
-
-                _context.Tasks.Update(task);
+                _context.MaterialWorks.Update(task);
                 await _context.SaveChangesAsync();
 
-                return Ok(new ResponseModel("Task updated"));
+                return Ok(task);
             }
             catch(Exception ex)
             {
@@ -233,10 +252,48 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
+        [HttpPut("{taskId}/materialRead")]
+        public async Task<IActionResult> EditMaterialRead(Guid taskId, [FromBody] MaterialReadEditModel dto)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.Comments).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                    return NotFound(new { message = "Task not found" });
+
+
+                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
+                task.Name = dto.Name;
+                task.Topic = dto.Topic;
+                task.Content = dto.Content;
+
+                _context.MaterialReads.Update(task);
+                await _context.SaveChangesAsync();
+
+                return Ok(task);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
 
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
-        [HttpDelete("{taskId}")]
-        public async Task<IActionResult> DeleteTask(Guid taskId)
+        [HttpDelete("{taskId}/materialWork")]
+        public async Task<IActionResult> DeleteMaterialWork(Guid taskId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
@@ -244,7 +301,7 @@ namespace ApiB.Controllers
             try
             {
 
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
@@ -258,7 +315,7 @@ namespace ApiB.Controllers
                 }
 
 
-                _context.Tasks.Remove(task);
+                _context.MaterialWorks.Remove(task);
                 await _context.SaveChangesAsync();
 
                 return Ok(new ResponseModel("Task deleted"));
@@ -270,66 +327,22 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
-        [HttpPost("{taskId}/readMaterial")]
-        public async Task<IActionResult> CreateReadTask(Guid taskId, [FromBody] TaskReadCreateDto taskRead)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-
-            try
-            {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                if (await _context.MaterialReads.AnyAsync(u => u.TaskId == taskId))
-                {
-                    return BadRequest("Task already have read material");
-                }
-
-                MaterialReadModel updateRead = new MaterialReadModel
-                {
-                    Id = Guid.NewGuid(),
-                    TaskId = taskId,
-                    Task = task,
-                    Content = taskRead.Content
-                };
-                
-                task.MaterialReadId = updateRead.Id;
-                task.MaterialReadModel = updateRead;
-
-                _context.Tasks.Update(task);
-                await _context.MaterialReads.AddAsync(updateRead);
-                await _context.SaveChangesAsync();
-
-                return Ok(updateRead);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
-        [HttpDelete("{taskId}/readMaterial")]
-        public async Task<IActionResult> DeleteReadTask(Guid taskId)
+        [HttpDelete("{taskId}/materialRead")]
+        public async Task<IActionResult> DeleteMaterialRead(Guid taskId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
+
             try
             {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+
+                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
 
                 IActionResult? httpResult = IsForbid(false, task.CourseId);
                 if (httpResult != null)
@@ -337,120 +350,10 @@ namespace ApiB.Controllers
                     return httpResult;
                 }
 
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                MaterialReadModel? readModel = await _context.MaterialReads.FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (readModel == null)
-                {
-                    return BadRequest("Task doesn't have any read material. Deleting is impossible.");
-                }
-
-                task.MaterialReadId = null;
-                task.MaterialReadModel = null;
-
-                _context.MaterialReads.Remove(readModel);
-                _context.Tasks.Update(task);
+                _context.MaterialReads.Remove(task);
                 await _context.SaveChangesAsync();
 
-                return Ok(new ResponseModel($"Read material {readModel.Id} deleted"));
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
-        [HttpPatch("{taskId}/readMaterial/change")]
-        public async Task<IActionResult> ReplaceReadTask(Guid taskId, [FromBody] TaskReadCreateDto taskRead)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-
-            try
-            {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                MaterialReadModel? readModel = await _context.MaterialReads.FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (readModel == null)
-                {
-                    return BadRequest("Task doesn't have any read material. Replacing is impossible.");
-                }
-
-                _context.MaterialReads.Remove(readModel);
-
-                MaterialReadModel updateRead = new MaterialReadModel
-                {
-                    Id = Guid.NewGuid(),
-                    TaskId = taskId,
-                    Task = task,
-                    Content = taskRead.Content
-                };
-
-                await _context.MaterialReads.AddAsync(updateRead);
-
-                task.MaterialReadId = updateRead.Id;
-                task.MaterialReadModel = updateRead;
-
-                _context.Tasks.Update(task);
-                await _context.SaveChangesAsync();
-
-                return Ok(new ResponseModel($"Read material {readModel.Id} was replaced by {updateRead.Id}"));
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
-        [HttpGet("{taskId}/readMaterial")]
-        public async Task<IActionResult> GetReadTask(Guid taskId)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-
-            try
-            {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
-
-                IActionResult? httpResult = IsForbid(true, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                MaterialReadModel? readModel = await _context.MaterialReads.FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (readModel == null)
-                {
-                    return BadRequest("Task doesn't have any read material.");
-                }
-
-                return Ok(readModel);
+                return Ok(new ResponseModel("Task deleted"));
             }
             catch (Exception ex)
             {
@@ -460,222 +363,6 @@ namespace ApiB.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
-        [HttpPost("{taskId}/workMaterial")]
-        public async Task<IActionResult> CreateWorkTask(Guid taskId, [FromBody] CombinedTaskWorkAndCriteriaModels CombinedDto)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-            
-            try
-            {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                if (await _context.MaterialWorks.AnyAsync(u => u.TaskId == taskId))
-                {
-                    return BadRequest("Task already have work material");
-                }
-
-
-                MaterialWorkModel updateWork = new MaterialWorkModel
-                {
-                    Id = Guid.NewGuid(),
-                    TaskId = taskId,
-                    Task = task,
-                    Score = CombinedDto.MaterialTaskWork.Score,
-                    Deadline = task.Deadline,
-                    Instructions = CombinedDto.MaterialTaskWork.Instructions
-                };
-
-                if (task.Deadline < DateTime.UtcNow)
-                {
-                    return BadRequest("Deadline is outdated");
-                }
-
-                CriteriaAssignment criteria = new CriteriaAssignment
-                {
-                    Id = Guid.NewGuid(),
-                    Title = CombinedDto.CriteriaAssignment.Title,
-                    Conditions = CombinedDto.CriteriaAssignment.Conditions,
-                    CountScore = CombinedDto.CriteriaAssignment.CountScore,
-                    Level = CombinedDto.CriteriaAssignment.Level,
-                    MaterialWorkModelId = updateWork.Id,
-                    MaterialWorkModel = updateWork
-                };
-                updateWork.CriteriaAssignments ??= new List<CriteriaAssignment>();
-                updateWork.CriteriaAssignments.Add(criteria);
-
-                task.MaterialWorkId = updateWork.Id;
-                task.MaterialWorkModel = updateWork;
-
-                if (updateWork.Score < criteria.CountScore)
-                {
-                    return BadRequest($"This score = {updateWork.Score}. It's less than {criteria.CountScore}");
-                }
-
-                _context.Tasks.Update(task);
-                await _context.CriteriaAssignments.AddAsync(criteria);
-                await _context.MaterialWorks.AddAsync(updateWork);
-                await _context.SaveChangesAsync();
-
-                return Ok(updateWork);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
-        [HttpDelete("{taskId}/workMaterial")]
-        public async Task<IActionResult> DeleteWorkTask(Guid taskId)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-
-            try
-            {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                MaterialWorkModel materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (materialWork == null)
-                {
-                    return NotFound("Material work not found");
-                }
-
-                _context.MaterialWorks.Remove(materialWork);
-
-                task.MaterialWorkId = null;
-                task.MaterialWorkModel = null;
-
-                _context.Tasks.Update(task);
-                await _context.SaveChangesAsync();
-
-                return Ok(new ResponseModel("Work task deleted"));
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
-        [HttpGet("{taskId}/workMaterial")]
-        public async Task<IActionResult> GetWorkTask(Guid taskId)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-
-            try
-            {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
-
-                IActionResult? httpResult = IsForbid(true, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(t => t.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (materialWork == null)
-                {
-                    return BadRequest("Task doesn't have any work material.");
-                }
-
-                return Ok(materialWork);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
-        [HttpPut("{taskId}/workMaterial")]
-        public async Task<IActionResult> PutWorkTask(Guid taskId, [FromBody] TaskWorkCreateModel dto)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-
-            try
-            {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(t => t.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (materialWork == null)
-                {
-                    return BadRequest("Task doesn't have any work material.");
-                }
-
-                if (task.Deadline < DateTime.UtcNow)
-                {
-                    return BadRequest("Deadline is outdated");
-                }
-
-                if (dto.Score < materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum())
-                {
-                    return BadRequest($"This score = {dto.Score}. It's less than {materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()}");
-                }
-
-                materialWork.Instructions = dto.Instructions;
-                materialWork.Score = dto.Score;
-                _context.MaterialWorks.Update(materialWork);
-                await _context.SaveChangesAsync();
-
-                return Ok(new ResponseModel("Work material is updated"));
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
         [HttpPost("{taskId}/workMaterial/Criteria")]
         public async Task<IActionResult> CreateCriteria(Guid taskId, [FromBody] CriteriaAssignmentCreateModel dto)
         {
@@ -684,7 +371,12 @@ namespace ApiB.Controllers
 
             try
             {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
 
                 IActionResult? httpResult = IsForbid(false, task.CourseId);
                 if (httpResult != null)
@@ -692,17 +384,6 @@ namespace ApiB.Controllers
                     return httpResult;
                 }
 
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (materialWork == null)
-                {
-                    return BadRequest("Task doesn't have any work material.");
-                }
 
                 CriteriaAssignment criteria = new CriteriaAssignment
                 {
@@ -711,9 +392,10 @@ namespace ApiB.Controllers
                     CountScore = dto.CountScore,
                     Level = dto.Level,
                     Title = dto.Title,
-                    MaterialWorkModelId = materialWork.Id,
-                    MaterialWorkModel = materialWork,
-                    GradeModel = materialWork.CriteriaAssignments?.FirstOrDefault(c => c.GradeModel != null)?.GradeModel
+                    GradeModel = task.CriteriaAssignments?.FirstOrDefault(c => c.GradeModel != null)?.GradeModel,
+                    GradeModelId = task.CriteriaAssignments?.FirstOrDefault(c => c.GradeModelId != null)?.GradeModelId,
+                    MaterialWorkModel = task,
+                    MaterialWorkModelId = task.Id
                 };
 
                 if (task.Deadline < DateTime.UtcNow)
@@ -721,19 +403,14 @@ namespace ApiB.Controllers
                     return BadRequest("Deadline is outdated");
                 }
 
-                if (dto.CountScore > materialWork.Score - materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum())
-                {
-                    return BadRequest($"This score = {dto.CountScore}. It's more than {materialWork.Score} - {materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()} = {materialWork.Score - materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()}");
-                }
-
-                materialWork.CriteriaAssignments ??= new List<CriteriaAssignment>();
-                materialWork.CriteriaAssignments.Add(criteria);
+                task.Score += criteria.CountScore;
+                task.CriteriaAssignments?.Add(criteria);
 
                 await _context.CriteriaAssignments.AddAsync(criteria);
-                _context.MaterialWorks.Update(materialWork);
+                _context.MaterialWorks.Update(task);
                 await _context.SaveChangesAsync();
 
-                return Ok(new ResponseModel("Criteria added"));
+                return Ok(task);
             }
             catch (Exception ex)
             {
@@ -750,7 +427,12 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
             try
             {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
 
                 IActionResult? httpResult = IsForbid(false, task.CourseId);
                 if (httpResult != null)
@@ -758,28 +440,18 @@ namespace ApiB.Controllers
                     return httpResult;
                 }
 
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (materialWork == null)
-                {
-                    return BadRequest("Task doesn't have any work material.");
-                }
-
-                CriteriaAssignment? criteria = await _context.CriteriaAssignments.FirstOrDefaultAsync(u => criteriaId == u.Id);
+                CriteriaAssignment? criteria = task.CriteriaAssignments.FirstOrDefault(u => criteriaId == u.Id);
 
                 if (criteria == null)
                 {
                     return NotFound("Criteria not found");
                 }
 
-                materialWork?.CriteriaAssignments?.Remove(criteria);
+                task.Score -= criteria.CountScore;
+                task.CriteriaAssignments?.Remove(criteria);
+
                 _context.CriteriaAssignments.Remove(criteria);
-                _context.MaterialWorks.Update(materialWork);
+                _context.MaterialWorks.Update(task);
                 await _context.SaveChangesAsync();
                 return Ok(new ResponseModel("Criteria deleted"));
             }
@@ -790,7 +462,7 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
         [HttpPut("{taskId}/workMaterial/Criteria/{criteriaId}")]
         public async Task<IActionResult> EditCriteria(Guid taskId, Guid criteriaId, [FromBody] CriteriaAssignmentCreateModel dto)
         {
@@ -798,7 +470,12 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
             try
             {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
 
                 IActionResult? httpResult = IsForbid(false, task.CourseId);
                 if (httpResult != null)
@@ -806,45 +483,31 @@ namespace ApiB.Controllers
                     return httpResult;
                 }
 
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
 
                 if (task.Deadline < DateTime.UtcNow)
                 {
                     return BadRequest("Deadline is outdated");
                 }
 
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(c => c.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (materialWork == null)
-                {
-                    return BadRequest("Task doesn't have any work material.");
-                }
-
-                CriteriaAssignment? criteria = await _context.CriteriaAssignments.FirstOrDefaultAsync(u => criteriaId == u.Id);
+                CriteriaAssignment? criteria = task.CriteriaAssignments.FirstOrDefault(u => criteriaId == u.Id);
 
                 if (criteria == null)
                 {
                     return NotFound("Criteria not found");
                 }
 
-                if (dto.CountScore > materialWork.Score - materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum())
-                {
-                    return BadRequest($"This score = {dto.CountScore}. It's more than {materialWork.Score} - {materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()} = {materialWork.Score - materialWork.CriteriaAssignments.Select(s => s.CountScore).Sum()}");
-                }
+                task.Score = task.CriteriaAssignments.Select(s => s.CountScore).Sum();
 
                 criteria.Title = dto.Title;
                 criteria.Level = dto.Level;
                 criteria.Conditions = dto.Conditions;
                 criteria.CountScore = dto.CountScore;
 
-
                 _context.CriteriaAssignments.Update(criteria);
+                _context.MaterialWorks.Update(task);
                 await _context.SaveChangesAsync();
 
-                return Ok(new ResponseModel("Criteria updated"));
+                return Ok(task);
             }
             catch (Exception ex)
             {
@@ -861,32 +524,21 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
             try
             {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
 
                 if (task == null)
                 {
                     return NotFound("Task not found");
                 }
 
-                if (task.Deadline < DateTime.UtcNow)
+                if (httpResult != null)
                 {
-                    return BadRequest("Deadline is outdated");
+                    return httpResult;
                 }
 
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(c => c.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
-
-                if (materialWork == null)
-                {
-                    return BadRequest("Task doesn't have any work material.");
-                }
-
-                CriteriaAssignment? criteria = await _context.CriteriaAssignments.FirstOrDefaultAsync(u => criteriaId == u.Id);
+                CriteriaAssignment? criteria = task.CriteriaAssignments.FirstOrDefault(u => criteriaId == u.Id);
 
                 if (criteria == null)
                 {
@@ -910,17 +562,18 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
             try
             {
-                TaskModel? task = await _context.Tasks.FirstOrDefaultAsync(u => u.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
 
                 if (task == null)
                 {
                     return NotFound("Task not found");
+                }
+
+                if (httpResult != null)
+                {
+                    return httpResult;
                 }
 
                 if (task.Deadline < DateTime.UtcNow)
@@ -928,21 +581,14 @@ namespace ApiB.Controllers
                     return BadRequest("Deadline is outdated");
                 }
 
-                MaterialWorkModel? materialWork = await _context.MaterialWorks.Include(c => c.CriteriaAssignments).FirstOrDefaultAsync(u => u.TaskId == taskId);
+                List<CriteriaAssignment>? criterias = task.CriteriaAssignments.ToList();
 
-                if (materialWork == null)
-                {
-                    return BadRequest("Task doesn't have any work material.");
-                }
-
-                List<CriteriaAssignment>? criteria = materialWork.CriteriaAssignments.ToList();
-
-                if (criteria == null)
+                if (criterias == null)
                 {
                     return NotFound("Criteria not found");
                 }
 
-                return Ok(criteria);
+                return Ok(criterias);
             }
             catch (Exception ex)
             {

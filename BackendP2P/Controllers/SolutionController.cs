@@ -1,5 +1,6 @@
 ﻿using Api.Models;
 using BackendP2P.Models.Request;
+using Domain.Entities;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,17 +34,12 @@ namespace BackendP2P.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel task = await _context.Tasks.Include(t => t.MaterialWorkModel).Include(t => t.Author).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
                 if (httpResult != null)
                 {
                     return httpResult;
-                }
-
-                if (!task.Students.Contains(userId))
-                {
-                    return StatusCode(403, "Student is not on the list to submit task");
                 }
 
                 if (task.Deadline < DateTime.UtcNow)
@@ -63,10 +59,9 @@ namespace BackendP2P.Controllers
                     Task = task
                 };
 
-                task.Solutions ??= new List<SolutionModel>();
-                task.Solutions.Add(solution);
+                task.Solutions?.Add(solution);
 
-                _context.Tasks.Update(task);
+                _context.MaterialWorks.Update(task);
                 await _context.Solutions.AddAsync(solution);
                 await _context.SaveChangesAsync();
 
@@ -91,7 +86,7 @@ namespace BackendP2P.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
                 if (httpResult != null)
@@ -99,7 +94,7 @@ namespace BackendP2P.Controllers
                     return httpResult;
                 }
 
-                SolutionModel solution = await _context.Solutions.FirstOrDefaultAsync(solution => solution.Id == solutionId);
+                SolutionModel? solution = task.Solutions.FirstOrDefault(solution => solution.Id == solutionId);
 
                 if (solution == null)
                 {
@@ -111,11 +106,6 @@ namespace BackendP2P.Controllers
                     return Forbid();
                 }
 
-                if (!task.Students.Contains(userId))
-                {
-                    return StatusCode(403, "Student is not on the list to submit task");
-                }
-
                 if (task.Deadline < DateTime.UtcNow)
                 {
                     return BadRequest("Deadline expired. You can not delete solution");
@@ -123,7 +113,7 @@ namespace BackendP2P.Controllers
 
                 task.Solutions.Remove(solution);
 
-                _context.Tasks.Update(task);
+                _context.MaterialWorks.Update(task);
                 _context.Solutions.Remove(solution);
                 await _context.SaveChangesAsync();
 
@@ -148,7 +138,7 @@ namespace BackendP2P.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
                 if (httpResult != null)
@@ -156,7 +146,7 @@ namespace BackendP2P.Controllers
                     return httpResult;
                 }
 
-                SolutionModel solution = await _context.Solutions.FirstOrDefaultAsync(solution => solution.Id == solutionId);
+                SolutionModel? solution = task.Solutions.FirstOrDefault(solution => solution.Id == solutionId);
 
                 if (solution == null)
                 {
@@ -166,11 +156,6 @@ namespace BackendP2P.Controllers
                 if (solution.StudentId != userId)
                 {
                     return Forbid();
-                }
-
-                if (!task.Students.Contains(userId))
-                {
-                    return StatusCode(403, "Student is not on the list to submit task");
                 }
 
                 if (task.Deadline < DateTime.UtcNow)
@@ -194,7 +179,7 @@ namespace BackendP2P.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SolutionModel))]
-        [HttpGet("{taskId}/{solutionId}")]
+        [HttpGet("{courseId}/{solutionId}")]
         public async Task<IActionResult> GetSolution(Guid taskId, Guid solutionId)
         {
             IActionResult? authResult = AuthenticateService();
@@ -204,7 +189,7 @@ namespace BackendP2P.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel task = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
 
@@ -213,16 +198,11 @@ namespace BackendP2P.Controllers
                     return httpResult;
                 }
 
-                SolutionModel solution = await _context.Solutions.FirstOrDefaultAsync(solution => solution.Id == solutionId);
+                SolutionModel? solution = task.Solutions.FirstOrDefault(solution => solution.Id == solutionId);
 
                 if (solution == null)
                 {
                     return NotFound("Solution not found");
-                }
-
-                if (!(solution.StudentId == userId || await _context.UsersCorses.AnyAsync(u => u.UserId == userId && (u.Role == Role.Teacher || u.Role == Role.Owner))))
-                {
-                    return StatusCode(403, "You are not an author student nor an owner nor a teacher");
                 }
 
                 return Ok(solution);
@@ -235,8 +215,8 @@ namespace BackendP2P.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<SolutionModel>))]
-        [HttpGet("{taskId}/list")]
-        public async Task<IActionResult> GetSolutionList(Guid taskId)
+        [HttpGet("{courseId}/{taskId}/list")]
+        public async Task<IActionResult> GetSolutionList(Guid taskId, Guid courseId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
@@ -245,7 +225,12 @@ namespace BackendP2P.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel task = await _context.Tasks.Include(t => t.Solutions).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
 
@@ -256,10 +241,12 @@ namespace BackendP2P.Controllers
 
                 List<SolutionModel> solutions = new List<SolutionModel>();
 
-                if (task.Students.Contains(userId))
+                if (task.Solutions.Select(s => s.StudentId).Contains(userId))
                 {
                     solutions = task.Solutions.Where(s => s.StudentId == userId).ToList();
-                } else if (await _context.UsersCorses.AnyAsync(s => s.UserId == userId && (s.Role == Role.Teacher || s.Role == Role.Owner))) {
+                } 
+                else if (await _context.UsersCorses.AnyAsync(s => s.CourseId == courseId && s.UserId == userId && (s.Role == Role.Teacher || s.Role == Role.Owner)))
+                {
                     solutions = task.Solutions.ToList();
                 }
 
@@ -271,8 +258,6 @@ namespace BackendP2P.Controllers
 
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
-
-
         }
         
         private IActionResult? AuthenticateService()

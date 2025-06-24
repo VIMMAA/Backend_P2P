@@ -5,14 +5,14 @@ using Domain.Abstractions;
 using Domain.Enums;
 using System.Text.Json.Serialization;
 
-public class MaterialWorkModel : Entity
+public class MaterialWorkModel : TaskModel
 {
     public int Score { get; set; }
     public DateTime Deadline { get; set; }
+    public Check Check { get; set; }
     public string Instructions { get; set; }
-    [JsonIgnore]
     public List<CriteriaAssignment>? CriteriaAssignments { get; set; }
-    public Guid TaskId { get; set; }
-    [JsonIgnore]
-    public TaskModel Task { get; set; }
+    //[JsonIgnore]
+    //public CheckPackage CheckPackage { get; set; }
+    public List<SolutionModel>? Solutions { get; set; }
 }

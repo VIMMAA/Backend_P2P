@@ -1,10 +1,9 @@
 ﻿namespace BackendP2P.Models.Request
 {
-    public class MaterialWorkEditModel
+    public class MaterialReadEditModel
     {
         public required string Name { get; set; }
         public string Topic { get; set; } = default!;
-        public DateTime Deadline { get; set; }
-        public string Instructions { get; set; }
+        public string Content { get; set; }
     }
 }

@@ -5,10 +5,7 @@ using Domain.Abstractions;
 using Domain.Enums;
 using System.Text.Json.Serialization;
 
-public class MaterialReadModel : Entity
+public class MaterialReadModel : TaskModel
 {
     public string Content { get; set; }
-    public Guid TaskId { get; set; }
-    [JsonIgnore]
-    public TaskModel Task { get; set; }
 }
