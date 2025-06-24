@@ -179,7 +179,7 @@ namespace BackendP2P.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SolutionModel))]
-        [HttpGet("{courseId}/{solutionId}")]
+        [HttpGet("{taskId}/{solutionId}")]
         public async Task<IActionResult> GetSolution(Guid taskId, Guid solutionId)
         {
             IActionResult? authResult = AuthenticateService();
