@@ -13,9 +13,9 @@ namespace Api.Models
         [JsonIgnore]
         public UserModel? Student { get; set; }
         public string Content { get; set; } = default!;
-        public string AttachmentPath { get; set; } = default!;
         public Guid TaskId { get; set; }
         [JsonIgnore]
         public TaskModel? Task { get; set; }
+        public ICollection<AttachedFileModel> AttachedFiles { get; set; } = new List<AttachedFileModel>();
     }
 }

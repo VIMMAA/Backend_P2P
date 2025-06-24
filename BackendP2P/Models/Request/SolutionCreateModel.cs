@@ -8,5 +8,6 @@ namespace BackendP2P.Models.Request
     {
         public string Content { get; set; } = default!;
         public string AttachmentPath { get; set; } = default!;
+        public List<AttachedFileDto>? Files { get; set; }
     }
 }

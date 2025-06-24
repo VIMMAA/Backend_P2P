@@ -63,10 +63,15 @@ namespace BackendP2P.Controllers
                     StudentId = userId,
                     Student = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId),
                     SubmissionTime = DateTime.UtcNow,
-                    AttachmentPath = model.AttachmentPath,
                     Content = model.Content,
                     TaskId = taskId,
-                    Task = task
+                    Task = task,
+                    AttachedFiles = model.Files?.Select(f => new AttachedFileModel
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = f.Name,
+                        Data = f.Data
+                    }).ToList() ?? new List<AttachedFileModel>()
                 };
 
                 task.Solutions?.Add(solution);
@@ -148,7 +153,7 @@ namespace BackendP2P.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).ThenInclude(t => t.AttachedFiles).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
 
@@ -184,7 +189,7 @@ namespace BackendP2P.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).ThenInclude(a => a.AttachedFiles).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
@@ -218,7 +223,92 @@ namespace BackendP2P.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
-        
+
+        [HttpPost("solution/{solutionId}/file")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AttachedFileModel))]
+        public async Task<IActionResult> AddFileToSolution(Guid solutionId, [FromBody] AttachedFileDto file)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                var solution = await _context.Solutions
+                    .Include(s => s.AttachedFiles)
+                    .FirstOrDefaultAsync(s => s.Id == solutionId);
+
+                if (solution == null)
+                    return NotFound("Solution not found");
+
+                if (solution.StudentId != userId)
+                    return Forbid();
+
+                AttachedFileModel answer = new AttachedFileModel
+                {
+                    Id = Guid.NewGuid(),
+                    Data = file.Data,
+                    Name = file.Name,
+                    Solution = solution,
+                    SolutionId = solutionId
+                };
+
+                solution.AttachedFiles.Add(answer);
+                _context.AttachedFiles.Add(answer);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(answer);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+
+        [HttpDelete("solution/{solutionId}/file/{fileId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> RemoveFileFromSolution(Guid solutionId, Guid fileId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                var solution = await _context.Solutions
+                    .Include(s => s.AttachedFiles)
+                    .FirstOrDefaultAsync(s => s.Id == solutionId);
+
+                if (solution == null)
+                    return NotFound("Solution not found");
+
+                if (solution.StudentId != userId)
+                    return Forbid();
+
+                var file = solution.AttachedFiles.FirstOrDefault(f => f.Id == fileId);
+
+                if (file == null)
+                    return NotFound("File not found");
+
+                solution.AttachedFiles.Remove(file);
+                _context.AttachedFiles.Remove(file);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "File removed" });
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+
+
+
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)
