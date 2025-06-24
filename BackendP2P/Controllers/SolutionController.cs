@@ -138,57 +138,6 @@ namespace BackendP2P.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SolutionModel))]
-        [HttpPut("{taskId}/{solutionId}")]
-        public async Task<IActionResult> PutSolution (Guid taskId, Guid solutionId, [FromBody] SolutionCreateModel dto)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-
-            try
-            {
-                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
-
-                IActionResult? httpResult = IsForbid(true, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-                SolutionModel? solution = task.Solutions.FirstOrDefault(solution => solution.Id == solutionId);
-
-                if (solution == null)
-                {
-                    return NotFound("Solution not found");
-                }
-
-                if (solution.StudentId != userId)
-                {
-                    return Forbid();
-                }
-
-                if (task.Deadline < DateTime.UtcNow)
-                {
-                    return BadRequest("Deadline expired. You can not update solution");
-                }
-
-                solution.Content = dto.Content;
-                solution.AttachmentPath = dto.AttachmentPath;
-
-                _context.Solutions.Update(solution);
-                await _context.SaveChangesAsync();
-
-                return Ok(solution);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SolutionModel))]
         [HttpGet("{taskId}/{solutionId}")]
         public async Task<IActionResult> GetSolution(Guid taskId, Guid solutionId)
         {

@@ -75,7 +75,6 @@ namespace ApiB.Controllers
                         Conditions = criteriaDto.Conditions,
                         GradeModel = null,//PLACE HERE FOREIGN KEY
                         GradeModelId = null,//Nav property here too
-                        Level = criteriaDto.Level,
                         Title = criteriaDto.Title,
                         MaterialWorkModel = task,
                         MaterialWorkModelId = task.Id
@@ -391,7 +390,6 @@ namespace ApiB.Controllers
                     Id = Guid.NewGuid(),
                     Conditions = dto.Conditions,
                     CountScore = dto.CountScore,
-                    Level = dto.Level,
                     Title = dto.Title,
                     GradeModel = task.CriteriaAssignments?.FirstOrDefault(c => c.GradeModel != null)?.GradeModel,
                     GradeModelId = task.CriteriaAssignments?.FirstOrDefault(c => c.GradeModelId != null)?.GradeModelId,
@@ -500,7 +498,6 @@ namespace ApiB.Controllers
                 task.Score = task.CriteriaAssignments.Select(s => s.CountScore).Sum();
 
                 criteria.Title = dto.Title;
-                criteria.Level = dto.Level;
                 criteria.Conditions = dto.Conditions;
                 criteria.CountScore = dto.CountScore;
 
