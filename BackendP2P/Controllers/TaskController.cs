@@ -73,8 +73,8 @@ namespace ApiB.Controllers
                         Id = Guid.NewGuid(),
                         CountScore = criteriaDto.CountScore,
                         Conditions = criteriaDto.Conditions,
-                        GradeModel = null,
-                        GradeModelId = null,
+                        GradeModel = null,//PLACE HERE FOREIGN KEY
+                        GradeModelId = null,//Nav property here too
                         Level = criteriaDto.Level,
                         Title = criteriaDto.Title,
                         MaterialWorkModel = task,
@@ -134,7 +134,8 @@ namespace ApiB.Controllers
                     Name = materialReadDto.Name,
                     Topic = materialReadDto.Topic,
                     CreateTime = DateTime.UtcNow,
-                    Comments = new List<CommentModel>()
+                    Comments = new List<CommentModel>(),
+                    Content = materialReadDto.Content
                 };
 
                 await _context.MaterialReads.AddAsync(materialRead);
@@ -186,7 +187,7 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
 
             try
-            {
+            { 
                 MaterialReadModel? task = await _context.MaterialReads.Include(t => t.Comments).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
@@ -363,7 +364,7 @@ namespace ApiB.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
-        [HttpPost("{taskId}/workMaterial/Criteria")]
+        [HttpPost("{taskId}/materialWork/Criteria")]
         public async Task<IActionResult> CreateCriteria(Guid taskId, [FromBody] CriteriaAssignmentCreateModel dto)
         {
             IActionResult? authResult = AuthenticateService();
@@ -420,7 +421,7 @@ namespace ApiB.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(ResponseModel))]
-        [HttpDelete("{taskId}/workMaterial/Criteria/{criteriaId}")]
+        [HttpDelete("{taskId}/materialWork/Criteria/{criteriaId}")]
         public async Task<IActionResult> DeleteCriteria(Guid taskId, Guid criteriaId)
         {
             IActionResult? authResult = AuthenticateService();
@@ -463,7 +464,7 @@ namespace ApiB.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
-        [HttpPut("{taskId}/workMaterial/Criteria/{criteriaId}")]
+        [HttpPut("{taskId}/materialWork/Criteria/{criteriaId}")]
         public async Task<IActionResult> EditCriteria(Guid taskId, Guid criteriaId, [FromBody] CriteriaAssignmentCreateModel dto)
         {
             IActionResult? authResult = AuthenticateService();
@@ -517,7 +518,7 @@ namespace ApiB.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CriteriaAssignment))]
-        [HttpGet("{taskId}/workMaterial/Criteria/{criteriaId}")]
+        [HttpGet("{taskId}/materialWork/Criteria/{criteriaId}")]
         public async Task<IActionResult> GetCriteria(Guid taskId, Guid criteriaId)
         {
             IActionResult? authResult = AuthenticateService();
@@ -526,7 +527,7 @@ namespace ApiB.Controllers
             {
                 MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
 
                 if (task == null)
                 {
@@ -555,7 +556,7 @@ namespace ApiB.Controllers
             }
         }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CriteriaAssignment>))]
-        [HttpGet("{taskId}/workMaterial/Criteria/List")]
+        [HttpGet("{taskId}/materialWork/Criteria/List")]
         public async Task<IActionResult> GetCriteriaList(Guid taskId)
         {
             IActionResult? authResult = AuthenticateService();
@@ -564,7 +565,7 @@ namespace ApiB.Controllers
             {
                 MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
 
                 if (task == null)
                 {

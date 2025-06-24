@@ -139,7 +139,7 @@ public class CourseController : ControllerBase
             return NotFound();
         }
         var course = await _context.Courses
-            .Include(c => c.Tasks)
+            .Include(c => c.Tasks).ThenInclude(c => c.Comments)
             .FirstOrDefaultAsync(c => c.Id == id);
 
         if (course == null)

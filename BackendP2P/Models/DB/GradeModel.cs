@@ -4,7 +4,8 @@ using System.Text.Json.Serialization;
 using Api.Models;
 using Domain.Abstractions;
 using Domain.Enums;
-public class GradeModel : Entity
+public class GradeModel : Entity//perhaps, you should check if Score exceeds sum of all criterias and give the result. Percentage or 5 grade system: 1/2/3/4/5
+                                //as you wish, anyway
 {
     public Guid? TeacherId { get; set; }
     [JsonIgnore]
