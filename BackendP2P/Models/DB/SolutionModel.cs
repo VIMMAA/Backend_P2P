@@ -10,6 +10,7 @@ namespace Api.Models
     {
         public DateTime SubmissionTime { get; set; }
         public Guid StudentId { get; set; }
+        
         [JsonIgnore]
         public UserModel? Student { get; set; }
         public string Content { get; set; } = default!;

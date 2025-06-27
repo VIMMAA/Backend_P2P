@@ -38,7 +38,7 @@ public class SolutionDistributionService
 
     private async Task DistributeSolutionsForTask(MaterialWorkModel task)
     {
-
+        var IsTeacher = false;
        
 
         var solutions = await _context.Solutions
@@ -96,7 +96,8 @@ public class SolutionDistributionService
             }
         else
         {
-                lateSolutions = solutions;
+            IsTeacher = true;
+            lateSolutions = solutions;
         }
 
         foreach (var lateSolution in lateSolutions)
@@ -127,7 +128,9 @@ public class SolutionDistributionService
             Id = Guid.NewGuid(),
             SolutionForCheckTasks = checkAssignments,
             TaskId = task.Id,
-            Deadline = DateTime.UtcNow.AddDays(7)
+            Deadline = DateTime.UtcNow.AddDays(7),
+            IsTeacher = IsTeacher,
+            IsProcessed = false
         });
 
         task.SolutionsDistributed = true;

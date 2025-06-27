@@ -20,6 +20,9 @@ public class ApplicationContext : DbContext
     public DbSet<SolutionForCheckModel> SolutionForChecks { get; set; }
     public DbSet<PackageCheckModel> PackageChecks { get; set; }
 
+    public DbSet <ReportModel> Reports { get; set; }
+
+
     public bool TestConnection()
     {
         try

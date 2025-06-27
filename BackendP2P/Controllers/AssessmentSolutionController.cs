@@ -86,9 +86,7 @@ namespace MyApi.MapControllers
 
         [HttpPost("{id}/submit")]
         [Authorize]
-        public async Task<IActionResult> SubmitCheck(
-            Guid id,
-            [FromBody] SolutionForCheckModel submission)
+        public async Task<IActionResult> SubmitCheck(Guid id, [FromBody] SolutionForCheckModel submission)
         {
             try
             {
@@ -96,7 +94,7 @@ namespace MyApi.MapControllers
 
                 var checkTask = await _context.SolutionForChecks
                     .Include(sc => sc.Solution)
-                        .ThenInclude(s => s.Task)
+                    .ThenInclude(s => s.Task)
                     .FirstOrDefaultAsync(s => s.Id == id && s.AuthortId == currentUserId);
 
                 if (checkTask == null)
@@ -130,6 +128,24 @@ namespace MyApi.MapControllers
                 checkTask.Assements = submission.Assements;
                 checkTask.IsChecked = true;
                 checkTask.DueTime = DateTime.UtcNow;
+
+                int totalScore = submission.Assements
+                .Where(a => a.Score.HasValue) 
+                .Sum(a => a.Score.Value);
+
+                if (userCourse.Role == Role.Teacher || userCourse.Role == Role.Owner)
+                {
+                    GradeModel grade = new GradeModel
+                    {
+                        Id = Guid.NewGuid(),
+                        TeacherId = currentUserId,
+                        Score = totalScore,
+                        StudentId = checkTask.Solution.StudentId,
+                        TaskId = checkTask.Solution.TaskId,
+                        Remark = submission.Comment,
+                    };
+                    await _context.Grades.AddAsync(grade);
+                }
 
                 await _context.SaveChangesAsync();
 

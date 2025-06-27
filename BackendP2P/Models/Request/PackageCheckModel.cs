@@ -16,6 +16,8 @@ namespace Api.Models
 
         public bool IsProcessed { get; set; } = false;
 
+        public bool IsTeacher { get; set; }
+
 
 
     }

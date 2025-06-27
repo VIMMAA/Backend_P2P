@@ -286,7 +286,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
       [HttpGet("profile")]
-           [Authorize] 
+        [Authorize] 
 
     public async Task<IActionResult> GetProfile()
     {

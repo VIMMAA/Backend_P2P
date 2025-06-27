@@ -14,10 +14,9 @@ namespace Api.Models
         public List<AssessmentModel> Assements { get; set; }
 
         public Guid SolutionId { get; set; }
-
+        
         [JsonIgnore]
-        public SolutionModel? Solution { get; set; }
-
+        public SolutionModel Solution { get; set; }
         public string Comment { get; set; }
 
         public Guid AuthortId { get; set; }
