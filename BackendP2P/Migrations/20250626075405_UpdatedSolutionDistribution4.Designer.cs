@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendP2P.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250624131612_penaltyplusn")]
-    partial class penaltyplusn
+    [Migration("20250626075405_UpdatedSolutionDistribution4")]
+    partial class UpdatedSolutionDistribution4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,20 +30,22 @@ namespace BackendP2P.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("MaxScore")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Remark")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("Score")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("TeacherId")
+                    b.Property<Guid?>("SolutionForCheckModelId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("TeacherId");
+                    b.HasIndex("SolutionForCheckModelId");
 
                     b.ToTable("Assessments");
                 });
@@ -140,6 +142,56 @@ namespace BackendP2P.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("Api.Models.PackageCheckModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Deadline")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PackageChecks");
+                });
+
+            modelBuilder.Entity("Api.Models.SolutionForCheckModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthortId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DueTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("PackageCheckModelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SolutionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PackageCheckModelId");
+
+                    b.ToTable("SolutionForChecks");
                 });
 
             modelBuilder.Entity("Api.Models.SolutionModel", b =>
@@ -432,6 +484,9 @@ namespace BackendP2P.Migrations
                     b.Property<int>("Score")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("SolutionsDistributed")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("SolutionsToCheckN")
                         .HasColumnType("integer");
 
@@ -440,19 +495,9 @@ namespace BackendP2P.Migrations
 
             modelBuilder.Entity("Api.Models.AssessmentModel", b =>
                 {
-                    b.HasOne("Domain.Entities.UserModel", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.UserModel", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId");
-
-                    b.Navigation("Student");
-
-                    b.Navigation("Teacher");
+                    b.HasOne("Api.Models.SolutionForCheckModel", null)
+                        .WithMany("Assements")
+                        .HasForeignKey("SolutionForCheckModelId");
                 });
 
             modelBuilder.Entity("Api.Models.AttachedFileModel", b =>
@@ -479,6 +524,13 @@ namespace BackendP2P.Migrations
                         .HasForeignKey("TaskModelId");
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("Api.Models.SolutionForCheckModel", b =>
+                {
+                    b.HasOne("Api.Models.PackageCheckModel", null)
+                        .WithMany("SolutionForCheckTasks")
+                        .HasForeignKey("PackageCheckModelId");
                 });
 
             modelBuilder.Entity("Api.Models.SolutionModel", b =>
@@ -621,6 +673,16 @@ namespace BackendP2P.Migrations
             modelBuilder.Entity("Api.Models.CourseModel", b =>
                 {
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("Api.Models.PackageCheckModel", b =>
+                {
+                    b.Navigation("SolutionForCheckTasks");
+                });
+
+            modelBuilder.Entity("Api.Models.SolutionForCheckModel", b =>
+                {
+                    b.Navigation("Assements");
                 });
 
             modelBuilder.Entity("Api.Models.SolutionModel", b =>

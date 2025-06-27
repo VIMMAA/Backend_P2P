@@ -19,5 +19,6 @@ public abstract class TaskModel : Entity
     public UserModel? Author { get; set; }
     [JsonIgnore]
     public CourseModel? Course { get; set; }
+
     public List<CommentModel>? Comments { get; set; }
 }

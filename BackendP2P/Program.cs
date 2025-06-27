@@ -8,8 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// builder.Services.AddHostedService<SolutionDistributionBackgroundService>();
-// builder.Services.AddScoped<SolutionDistributionService>();
+builder.Services.AddHostedService<SolutionDistributionBackgroundService>();
+builder.Services.AddScoped<SolutionDistributionService>();
+builder.Services.AddHostedService<DeadlineProcessingService>();
 
 builder.Services.AddCors(options =>
 {

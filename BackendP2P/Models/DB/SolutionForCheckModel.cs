@@ -10,17 +10,21 @@ namespace Api.Models
     {
 
 
-        // [Required]
-        // public CriteriaAssignments CriteriaAssegment { get; set; }
+        [Required]
+        public List<AssessmentModel> Assements { get; set; }
 
         public Guid SolutionId { get; set; }
 
+        [JsonIgnore]
+        public SolutionModel? Solution { get; set; }
+
         public string Comment { get; set; }
-         
+
         public Guid AuthortId { get; set; }
 
         public DateTime DueTime { get; set; }
 
         public bool IsChecked { get; set; } = false;
+        
     }
 }

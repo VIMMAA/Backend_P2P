@@ -8,19 +8,11 @@ namespace Api.Models
 {
     public class AssessmentModel : Entity//2 fk         навигации - 2
     {
-        public Guid? TeacherId { get; set; }
 
-        [Range(0, 100)]
-        public int Score { get; set; }
+        public int? Score { get; set; }
 
-        [Required]
-        public Guid StudentId { get; set; }
-
-        [JsonIgnore]
-        public UserModel? Student { get; set; }
-
-        [JsonIgnore]
-        public UserModel? Teacher { get; set; }
-
+        public int MaxScore { get; set; }
+        public string Remark { get; set; }
+        
     }
 }

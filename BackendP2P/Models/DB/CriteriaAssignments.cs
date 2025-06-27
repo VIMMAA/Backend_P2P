@@ -4,7 +4,7 @@ using Domain.Abstractions;
 using Domain.Enums;
 using System.Text.Json.Serialization;
 
-public class CriteriaAssignment : Entity//раньше было название CriteriaAssignments
+public class CriteriaAssignment : Entity//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ CriteriaAssignments
 {
     public required string Title { get; set; }
     public required string Conditions { get; set; }
@@ -16,4 +16,4 @@ public class CriteriaAssignment : Entity//раньше было название CriteriaAssignmen
     [JsonIgnore]
     public GradeModel? GradeModel { get; set; }
 
-}
+} 

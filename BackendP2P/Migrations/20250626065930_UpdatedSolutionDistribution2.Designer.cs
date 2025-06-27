@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendP2P.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250626065930_UpdatedSolutionDistribution2")]
+    partial class UpdatedSolutionDistribution2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,9 +43,14 @@ namespace BackendP2P.Migrations
                     b.Property<Guid?>("SolutionForCheckModelId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("SolutionForCheckModelId");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Assessments");
                 });
@@ -495,6 +503,14 @@ namespace BackendP2P.Migrations
                     b.HasOne("Api.Models.SolutionForCheckModel", null)
                         .WithMany("Assements")
                         .HasForeignKey("SolutionForCheckModelId");
+
+                    b.HasOne("Domain.Entities.UserModel", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("Api.Models.AttachedFileModel", b =>

@@ -17,6 +17,9 @@ public class ApplicationContext : DbContext
     public DbSet<CommentModel> Comments { get; set; }
     public DbSet<AttachedFileModel> AttachedFiles { get; set; }
 
+    public DbSet<SolutionForCheckModel> SolutionForChecks { get; set; }
+    public DbSet<PackageCheckModel> PackageChecks { get; set; }
+
     public bool TestConnection()
     {
         try

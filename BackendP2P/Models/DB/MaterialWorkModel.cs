@@ -14,7 +14,8 @@ public class MaterialWorkModel : TaskModel
     public List<CriteriaAssignment>? CriteriaAssignments { get; set; }
     public double Penalty { get; set; } = 0.3;
     public int SolutionsToCheckN { get; set; } = 2;
-    //[JsonIgnore]
-    //public CheckPackage CheckPackage { get; set; }
+
+    public bool SolutionsDistributed { get; set; } = false;
+
     public List<SolutionModel>? Solutions { get; set; }
 }
