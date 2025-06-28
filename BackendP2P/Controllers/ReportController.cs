@@ -65,7 +65,18 @@ public class ReportsController : ControllerBase
 
         var student = _context.Users.FirstOrDefault(u => u.Id == createModel.StudentId);
 
-
+        var sol = _context.Solutions.FirstOrDefault(m => m.Id == createModel.SolutionId);
+        if (sol == null)
+        {
+            return BadRequest(new { message = "Решение не найдено" });
+        }
+        
+        var task = _context.MaterialWorks.FirstOrDefault(m => m.Id == sol.TaskId);
+        
+        if (task == null)
+        {
+            return BadRequest(new { message = "Задание не найдено" });
+        }
 
         var reportCount = _context.Reports.Count();
         var newReport = new ReportModel
@@ -73,10 +84,12 @@ public class ReportsController : ControllerBase
             Id = Guid.NewGuid(),
             Numb = reportCount + 1,
             Description = createModel.Description,
-            Theme = createModel.Theme,
-            StudentRep = student.FirstName + " " + student.LastName, 
-            Author = user.FirstName + " " + user.LastName,     
-            CreateTime = DateTime.UtcNow
+            Theme = task.Name,
+            StudentRep = student.FirstName + " " + student.LastName,
+            Author = user.FirstName + " " + user.LastName,
+            CreateTime = DateTime.UtcNow,
+            Solution = sol,
+            SolutionId = sol.Id
         };
 
          _context.Reports.Add(newReport);

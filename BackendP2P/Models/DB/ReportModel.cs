@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Api.Models;
 using Domain.Abstractions;
 
 public class ReportModel : Entity
@@ -11,6 +13,11 @@ public class ReportModel : Entity
     public string Author { get; set; }
 
     public DateTime CreateTime { get; set; }
+
+    public Guid SolutionId { get; set; }
+    
+    [JsonIgnore]
+    public SolutionModel Solution { get; set; }
 
 
 }
