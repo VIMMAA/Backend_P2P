@@ -207,7 +207,6 @@ public class CourseController : ControllerBase
     [Authorize]
     public async Task<IActionResult> JoinCourseByCode(string code)
     {
-        // Получаем ID пользователя из токена
         var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null)

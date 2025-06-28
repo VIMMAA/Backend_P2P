@@ -11,7 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Domain.Entities;
 using Domain.Enums;
-
+using BackendP2P.Models.Request;
 
 namespace MyApi.MapControllers
 {
@@ -156,6 +156,55 @@ namespace MyApi.MapControllers
                 return StatusCode(500, "Произошла внутренняя ошибка сервера");
             }
         }
+
+
+       [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize]
+        [HttpGet("solution/{solutionId}")]
+
+        public async Task<IActionResult> GetAssessmentsBySolutionId(Guid solutionId)
+        {
+            var solution = await _context.Solutions
+                .Include(s => s.Task)
+                .ThenInclude(t => t.Course)
+                .FirstOrDefaultAsync(s => s.Id == solutionId);
+
+            if (solution == null)
+            {
+                return NotFound("Решение не найдено");
+            }
+
+            var checks = await _context.SolutionForChecks
+                .Include(s => s.Assements)
+                .Where(s => s.SolutionId == solutionId)
+                .ToListAsync();
+
+            if (!checks.Any())
+            {
+                return NotFound("Проверки для указанного решения не найдены");
+            }
+
+            var authorIds = checks.Select(c => c.AuthortId).Distinct();
+
+            var teacherIds = await _context.UsersCorses
+                .Where(uc => uc.CourseId == solution.Task.CourseId &&
+                           (uc.Role == Role.Teacher || uc.Role == Role.Owner) &&
+                            authorIds.Contains(uc.UserId))
+                .Select(uc => uc.UserId)
+                .ToListAsync();
+
+            var result = new AssessmentList
+            {
+                SolutionForCheckModels = checks,
+                TeacherAssessment = checks.FirstOrDefault(c => teacherIds.Contains(c.AuthortId)),
+                Grade = await _context.Grades
+                    .FirstOrDefaultAsync(g => g.TaskId == solution.TaskId &&
+                                            g.StudentId == solution.StudentId)
+            };
+
+            return Ok(result);
+        }
+    
         private Guid GetCurrentUserId()
         {
             var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);

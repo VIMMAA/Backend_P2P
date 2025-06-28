@@ -128,7 +128,7 @@ public class SolutionDistributionService
             Id = Guid.NewGuid(),
             SolutionForCheckTasks = checkAssignments,
             TaskId = task.Id,
-            Deadline = DateTime.UtcNow.AddDays(7),
+            Deadline = DateTime.UtcNow.AddMinutes(5),
             IsTeacher = IsTeacher,
             IsProcessed = false
         });

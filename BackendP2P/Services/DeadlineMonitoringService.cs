@@ -9,12 +9,14 @@ public class DeadlineProcessingService : BackgroundService
     private readonly ILogger<DeadlineProcessingService> _logger;
     private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(10);
 
+    private readonly ApplicationContext _context;
 
 
-    public DeadlineProcessingService(IServiceProvider services, ILogger<DeadlineProcessingService> logger)
+    public DeadlineProcessingService(ApplicationContext context, IServiceProvider services, ILogger<DeadlineProcessingService> logger)
     {
         _services = services;
         _logger = logger;
+        _context = context;
 
     }
 
@@ -41,12 +43,12 @@ public class DeadlineProcessingService : BackgroundService
     {
         var now = DateTime.UtcNow;
         var expiredPackages = await context.PackageChecks
-            .Where(p => !p.IsProcessed && p.Deadline <= now)
+            .Where(p => !p.IsProcessed && p.Deadline <= now && p.IsTeacher == false)
             .Include(p => p.SolutionForCheckTasks)
-                .ThenInclude(s => s.Assements)
+            .ThenInclude(s => s.Assements)
             .Include(p => p.SolutionForCheckTasks)
-                .ThenInclude(s => s.Solution)
-                    .ThenInclude(s => s.Task)
+            .ThenInclude(s => s.Solution)
+            .ThenInclude(s => s.Task)
             .ToListAsync();
 
         foreach (var package in expiredPackages)
@@ -67,15 +69,52 @@ public class DeadlineProcessingService : BackgroundService
     private async Task CalculateAndSaveFinalGrades(ApplicationContext context, PackageCheckModel package)
     {
         var solutionsGroups = package.SolutionForCheckTasks
-            .GroupBy(s => s.SolutionId);
+        .GroupBy(s => s.SolutionId);
 
-
-        foreach (var pack in solutionsGroups)
+        foreach (var group in solutionsGroups)
         {
-            var solutionId = pack.Key;
-            
+            var sum = 0.0;
+            var solution = group.First().Solution;
+            if (solution == null) continue;
+
+
+            Console.WriteLine($"Обрабатываем решение: {group.Key}");
+
+            var firstCheckWithAssessments = group.FirstOrDefault(c => c.Assements?.Any() == true);
+            if (firstCheckWithAssessments == null) continue;
+
+            int assessmentsCount = firstCheckWithAssessments.Assements.Count;
+
+            for (int i = 0; i < assessmentsCount; i++)
+            {
+                var positionScores = group
+                    .Where(c => c.Assements != null && c.Assements.Count > i)
+                    .Select(c => c.Assements[i])
+                    .Where(a => a.Score.HasValue)
+                    .ToList();
+
+                if (positionScores.Any())
+                {
+                    double averageScore = positionScores.Average(a => a.Score.Value);
+                    sum += averageScore;
+                    Console.WriteLine($"Среднее для оценки #{i + 1}: {averageScore:F2}");
+                }
+            }
+            var fin = (int)Math.Round(sum, MidpointRounding.AwayFromZero);
+
+            GradeModel grade = new GradeModel
+            {
+                Id = Guid.NewGuid(),
+                Score = fin,
+                StudentId = solution.StudentId,
+                TaskId = solution.TaskId,
+                Remark = "",
+            };
+
+            _context.Grades.Add(grade);
         }
 
         await context.SaveChangesAsync();
     }
 }
+

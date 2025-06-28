@@ -23,6 +23,14 @@ public class ApplicationContext : DbContext
     public DbSet <ReportModel> Reports { get; set; }
 
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<TaskModel>().UseTpcMappingStrategy();
+    modelBuilder.Entity<MaterialReadModel>().ToTable("MaterialReads");
+    modelBuilder.Entity<MaterialWorkModel>().ToTable("MaterialWorks");
+}
+
+
     public bool TestConnection()
     {
         try

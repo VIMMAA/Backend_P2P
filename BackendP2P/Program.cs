@@ -10,8 +10,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddHostedService<SolutionDistributionBackgroundService>();
 builder.Services.AddScoped<SolutionDistributionService>();
-builder.Services.AddHostedService<DeadlineProcessingService>();
-
+builder.Services.AddScoped<DeadlineProcessingService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policyBuilder =>
