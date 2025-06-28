@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendP2P.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250628051921_UpdatedSolutionDistribution1")]
-    partial class UpdatedSolutionDistribution1
+    [Migration("20250628175857_description")]
+    partial class description
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -249,11 +249,11 @@ namespace BackendP2P.Migrations
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Topic")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -432,6 +432,9 @@ namespace BackendP2P.Migrations
                     b.Property<int>("Numb")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("SolutionId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("StudentRep")
                         .IsRequired()
                         .HasColumnType("text");
@@ -441,6 +444,8 @@ namespace BackendP2P.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SolutionId");
 
                     b.ToTable("Reports");
                 });
@@ -492,10 +497,6 @@ namespace BackendP2P.Migrations
                 {
                     b.HasBaseType("Api.Models.TaskModel");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.ToTable("MaterialReads", (string)null);
                 });
 
@@ -508,10 +509,6 @@ namespace BackendP2P.Migrations
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Instructions")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<double>("Penalty")
                         .HasColumnType("double precision");
@@ -680,6 +677,17 @@ namespace BackendP2P.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("ReportModel", b =>
+                {
+                    b.HasOne("Api.Models.SolutionModel", "Solution")
+                        .WithMany()
+                        .HasForeignKey("SolutionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Solution");
                 });
 
             modelBuilder.Entity("SolutionCheck", b =>

@@ -36,6 +36,11 @@ namespace BackendP2P.Controllers
 
                 MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
+                if (task == null)
+                {
+                    return NotFound("Material Work not found");
+                }
+
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
                 if (httpResult != null)
                 {
@@ -103,6 +108,11 @@ namespace BackendP2P.Controllers
 
                 MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
+                if (task == null)
+                {
+                    return NotFound("Material Work not found");
+                }
+
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
                 if (httpResult != null)
                 {
@@ -154,6 +164,11 @@ namespace BackendP2P.Controllers
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).ThenInclude(t => t.AttachedFiles).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+
+                if (task == null)
+                {
+                    return NotFound("Material Work not found");
+                }
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
 

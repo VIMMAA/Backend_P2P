@@ -55,7 +55,6 @@ namespace ApiB.Controllers
                     CourseId = courseId,
                     Course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == courseId),
                     Name = taskDto.Name,
-                    Topic = taskDto.Topic,
                     CreateTime = DateTime.UtcNow,
                     Deadline = taskDto.Deadline,
                     Penalty = taskDto.Penalty == null ? 0.3 : (double)taskDto.Penalty,
@@ -63,7 +62,7 @@ namespace ApiB.Controllers
                     Check = taskDto.isP2P ? Check.P2P : Check.TeacherOnly,
                     Comments = new List<CommentModel>(),
                     Solutions = new List<SolutionModel>(),
-                    Instructions = taskDto.Instructions
+                    Description = taskDto.Description
                 };
 
                 List<CriteriaAssignment> criterias = new List<CriteriaAssignment>();
@@ -133,10 +132,9 @@ namespace ApiB.Controllers
                     CourseId = courseId,
                     Course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == courseId),
                     Name = materialReadDto.Name,
-                    Topic = materialReadDto.Topic,
                     CreateTime = DateTime.UtcNow,
                     Comments = new List<CommentModel>(),
-                    Content = materialReadDto.Content
+                    Description = materialReadDto.Description
                 };
 
                 await _context.MaterialReads.AddAsync(materialRead);
@@ -233,9 +231,8 @@ namespace ApiB.Controllers
                     return httpResult;
                 }
                 task.Name = dto.Name;
-                task.Topic = dto.Topic;
                 task.Deadline = dto.Deadline;
-                task.Instructions = dto.Instructions;
+                task.Description = dto.Description;
 
                 if (task.Deadline < DateTime.UtcNow)
                 {
@@ -277,8 +274,7 @@ namespace ApiB.Controllers
                     return httpResult;
                 }
                 task.Name = dto.Name;
-                task.Topic = dto.Topic;
-                task.Content = dto.Content;
+                task.Description = dto.Description;
 
                 _context.MaterialReads.Update(task);
                 await _context.SaveChangesAsync();

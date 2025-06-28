@@ -7,5 +7,4 @@ using System.Text.Json.Serialization;
 
 public class MaterialReadModel : TaskModel
 {
-    public string Content { get; set; }
 }

@@ -3,8 +3,7 @@
     public class MaterialWorkEditModel
     {
         public required string Name { get; set; }
-        public string Topic { get; set; } = default!;
+        public string Description { get; set; }
         public DateTime Deadline { get; set; }
-        public string Instructions { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendP2P.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250628173250_initialcreate")]
+    partial class initialcreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,11 +249,11 @@ namespace BackendP2P.Migrations
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Topic")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -494,6 +497,10 @@ namespace BackendP2P.Migrations
                 {
                     b.HasBaseType("Api.Models.TaskModel");
 
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.ToTable("MaterialReads", (string)null);
                 });
 
@@ -506,6 +513,10 @@ namespace BackendP2P.Migrations
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Instructions")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<double>("Penalty")
                         .HasColumnType("double precision");

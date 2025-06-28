@@ -13,7 +13,7 @@ public abstract class TaskModel : Entity
     [ForeignKey(nameof(Course))]
     public required Guid CourseId { get; set; }
     public required string Name { get; set; }
-    public string Topic { get; set; } = default!;
+    public string Description { get; set; }
     public required DateTime CreateTime { get; set; }
     [JsonIgnore]
     public UserModel? Author { get; set; }
