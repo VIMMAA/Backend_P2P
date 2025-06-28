@@ -5,4 +5,5 @@ public class UserCourseDto
     public string Subject { get; set; }
     public string Chapter { get; set; }
     public string Role { get; set; }
+    public string Owner { get; set; }
 }

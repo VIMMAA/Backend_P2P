@@ -13,11 +13,11 @@ using System.Security.Claims;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReportsController : ControllerBase
+public class ReportController : ControllerBase
 {
      private readonly ApplicationContext _context;
         private readonly ITokenRevocationService _tokenRevocationService;
-        public ReportsController(ApplicationContext context, ITokenRevocationService tokenRevocationService)
+        public ReportController(ApplicationContext context, ITokenRevocationService tokenRevocationService)
         {
             _context = context;
             _tokenRevocationService = tokenRevocationService;

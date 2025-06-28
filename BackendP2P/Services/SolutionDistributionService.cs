@@ -21,7 +21,7 @@ public class SolutionDistributionService
 
         var expiredMaterialWorks = await _context.MaterialWorks
         .Where(mw => mw.Deadline < DateTime.UtcNow)
-        .Include(mw => mw.CriteriaAssignments)      
+        .Include(mw => mw.CriteriaAssignments)
         .ToListAsync();
 
 
@@ -37,102 +37,137 @@ public class SolutionDistributionService
     }
 
     private async Task DistributeSolutionsForTask(MaterialWorkModel task)
-    {
-        var IsTeacher = false;
-       
-
-        var solutions = await _context.Solutions
-        .Where(s => s.TaskId == task.Id)  
-        .Include(s => s.Student)         
-        .Include(s => s.AttachedFiles)    
+{
+    // 1. Загружаем решения с необходимыми данными
+    var solutions = await _context.Solutions
+        .Where(s => s.TaskId == task.Id)
+        .Include(s => s.Student)
+        .Include(s => s.AttachedFiles)
         .ToListAsync();
 
-        var onTimeSolutions = solutions.Where(s => s.SubmissionTime <= task.Deadline).ToList();
-        var lateSolutions = solutions.Where(s => s.SubmissionTime > task.Deadline).ToList();
+    // 2. Фильтруем по дедлайну
+    var onTimeSolutions = solutions
+        .Where(s => s.SubmissionTime <= task.Deadline)
+        .ToList();
 
-        var submitters = onTimeSolutions
-            .Select(s => s.Student)
-            .ToList();
+    var lateSolutions = solutions
+        .Where(s => s.SubmissionTime > task.Deadline)
+        .ToList();
 
-        var checkAssignments = new List<SolutionForCheckModel>();
+    // 3. Подготовка данных для распределения
+    var checkAssignments = new List<SolutionForCheckModel>();
+    var random = new Random();
+    bool isTeacherCheckRequired = false;
 
-            if (task.Check == Check.P2P && onTimeSolutions.Count > 1 && (submitters.Count - 1 >= task.SolutionsToCheckN))
+    // 4. Словарь для учёта нагрузки студентов
+    var reviewerLoad = new Dictionary<string, int>();
+    foreach (var solution in onTimeSolutions)
+    {
+        reviewerLoad[solution.StudentId.ToString()] = 0;
+    }
+
+    // 5. Распределение P2P-проверок
+    if (task.Check == Check.P2P && onTimeSolutions.Count >= 2)
+    {
+        foreach (var solution in onTimeSolutions)
+        {
+            var neededChecks = task.SolutionsToCheckN;
+
+            // Выбираем ревьюеров с минимальной текущей нагрузкой
+            var availableReviewers = onTimeSolutions
+                .Where(s => s.StudentId != solution.StudentId)
+                .OrderBy(s => reviewerLoad[s.StudentId.ToString()])
+                .ThenBy(_ => random.Next())
+                .Take(neededChecks)
+                .ToList();
+
+            // Если не хватает ревьюеров, переключаемся на проверку преподавателем
+            if (availableReviewers.Count < neededChecks)
             {
-                foreach (var solution in onTimeSolutions)
-                {
-                    var availableReviewers = submitters
-                        .Where(u => u.Id != solution.StudentId)
-                        .OrderBy(x => Guid.NewGuid())
-                        .ToList();
+                isTeacherCheckRequired = true;
+                break;
+            }
 
-                    var existingChecks = checkAssignments
-                        .Count(c => c.SolutionId == solution.Id);
+            // Создаём проверки
+            foreach (var reviewer in availableReviewers)
+            {
+                reviewerLoad[reviewer.StudentId.ToString()]++;
 
-                    var neededChecks = task.SolutionsToCheckN - existingChecks;
-                    
-
-                    for (int i = 0; i < neededChecks && i < availableReviewers.Count; i++)
-                {
-                     var newAssessments = task.CriteriaAssignments
-                    .Select(criteria => new AssessmentModel
+                var assessments = task.CriteriaAssignments
+                    .Select(c => new AssessmentModel
                     {
                         Id = Guid.NewGuid(),
-                        Score = 0, 
-                        MaxScore = criteria.CountScore, 
-                        Remark = criteria.Conditions, 
+                        Score = 0,
+                        MaxScore = c.CountScore,
+                        Remark = c.Conditions
                     })
                     .ToList();
-                    checkAssignments.Add(new SolutionForCheckModel
-                    {
-                        Assements = newAssessments,
-                        Id = Guid.NewGuid(),
-                        SolutionId = solution.Id,
-                        AuthortId = availableReviewers[i].Id,
-                        DueTime = DateTime.UtcNow.AddDays(7),
-                        Comment = string.Empty
-                    });
-                }
-                }
-            }
-        else
-        {
-            IsTeacher = true;
-            lateSolutions = solutions;
-        }
-
-        foreach (var lateSolution in lateSolutions)
-            {
-                 var newAssessments = task.CriteriaAssignments
-                .Select(criteria => new AssessmentModel
-                {
-                    Id = Guid.NewGuid(),
-                    MaxScore = criteria.CountScore, 
-                    Remark = criteria.Conditions, 
-                })
-                .ToList();
 
                 checkAssignments.Add(new SolutionForCheckModel
                 {
-                    Assements = newAssessments,
                     Id = Guid.NewGuid(),
-                    SolutionId = lateSolution.Id,
-                    AuthortId = task.AuthorId,
+                    SolutionId = solution.Id,
+                    AuthortId = reviewer.StudentId,
                     DueTime = DateTime.UtcNow.AddDays(7),
-                    Comment = ""
+                    Assements = assessments,
+                    Comment = string.Empty
                 });
-                
             }
+        }
+    }
+    else
+    {
+        isTeacherCheckRequired = true;
+    }
 
+    // 6. Проверка преподавателем (для опоздавших или если P2P невозможно)
+    if (isTeacherCheckRequired)
+    {
+        var solutionsToCheck = lateSolutions;
+        if (isTeacherCheckRequired && task.Check == Check.P2P)
+        {
+            solutionsToCheck = solutions; // Проверяем все решения
+        }
+
+        foreach (var solution in solutionsToCheck)
+        {
+            var assessments = task.CriteriaAssignments
+                .Select(c => new AssessmentModel
+                {
+                    Id = Guid.NewGuid(),
+                    Score = 0,
+                    MaxScore = c.CountScore,
+                    Remark = c.Conditions
+                })
+                .ToList();
+
+            checkAssignments.Add(new SolutionForCheckModel
+            {
+                Id = Guid.NewGuid(),
+                SolutionId = solution.Id,
+                AuthortId = task.AuthorId,
+                DueTime = DateTime.UtcNow.AddDays(7),
+                Assements = assessments,
+                Comment = string.Empty
+            });
+        }
+    }
+
+    // 7. Создаём пакет проверок
+    if (checkAssignments.Any())
+    {
         await _context.PackageChecks.AddAsync(new PackageCheckModel
         {
             Id = Guid.NewGuid(),
             SolutionForCheckTasks = checkAssignments,
             TaskId = task.Id,
-            Deadline = DateTime.UtcNow.AddMinutes(5),
-            IsTeacher = IsTeacher,
+            Deadline = DateTime.UtcNow.AddDays(7),
+            IsTeacher = isTeacherCheckRequired,
             IsProcessed = false
         });
 
         task.SolutionsDistributed = true;
     }
+}
+
 }

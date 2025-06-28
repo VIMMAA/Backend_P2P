@@ -36,9 +36,9 @@ namespace MyApi.MapControllers
 
         }
 
-    [HttpGet("List")]
+    [HttpGet("List{courseId}")]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<List<PackageCheckModel>>>> GetMyChecks()
+    public async Task<ActionResult<IEnumerable<List<PackageCheckModel>>>> GetMyChecks(Guid courseId)
     {
         var currentUserId = GetCurrentUserId();
 
@@ -49,8 +49,15 @@ namespace MyApi.MapControllers
             .OrderByDescending(p => p.Deadline)
             .ToListAsync();
 
+            var finalcheck = new List <PackageShort>() ;
+            
             foreach (var check in checks)
             {
+                var task = await _context.MaterialWorks.
+                    FirstOrDefaultAsync(t => t.Id == check.TaskId);
+
+
+
                 var List = new List<SolutionForCheckModel>();
 
                 foreach (var sol in check.SolutionForCheckTasks)
@@ -60,10 +67,23 @@ namespace MyApi.MapControllers
                         List.Add(sol);
                     }
                 }
-                check.SolutionForCheckTasks = List;
+                if (task.CourseId != courseId)
+                {
+                    continue;
+                }
+                else
+                {
+                    PackageShort packageShort = new PackageShort
+                    {
+                        Deadline = check.Deadline,
+                        SolutionForCheckTasks = List,
+                        TaskId = check.TaskId
+                    };
+                    finalcheck.Add(packageShort);
+                }
             }
 
-        return Ok(checks);
+        return Ok(finalcheck);
     }
 
         [HttpGet("{id}")]

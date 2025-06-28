@@ -17,4 +17,6 @@ public class GradeModel : Entity
     [JsonIgnore]
     public UserModel Student { get; set; }
 
+
+
 }

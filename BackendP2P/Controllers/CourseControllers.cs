@@ -98,11 +98,11 @@ public class CourseController : ControllerBase
                 Owner = user.FirstName + " " + user.LastName
             };
 
-            
+
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
-            
+
             UserCorse userCorse = new UserCorse
             {
                 Id = Guid.NewGuid(),
@@ -141,10 +141,10 @@ public class CourseController : ControllerBase
 
         var userId = Guid.Parse(userIdClaim.Value);
 
-         var object1 = _context.UsersCorses
-            .Where(uc => uc.UserId == userId && uc.CourseId == id)
-            .FirstOrDefault();
-            
+        var object1 = _context.UsersCorses
+           .Where(uc => uc.UserId == userId && uc.CourseId == id)
+           .FirstOrDefault();
+
         if (object1 == null)
         {
             return NotFound();
@@ -187,7 +187,7 @@ public class CourseController : ControllerBase
             .Where(uc => uc.UserId == userId && uc.CourseId == id)
             .Select(uc => uc.Role)
             .FirstOrDefault();
-            
+
         if (course == null || role == null)
         {
             return NotFound();
@@ -219,7 +219,7 @@ public class CourseController : ControllerBase
             return BadRequest(new { message = "Некорректный ID пользователя" });
         }
 
-       
+
         var course = await _context.Courses
             .FirstOrDefaultAsync(c => c.StudentsCode == code || c.TeachersCode == code);
 
@@ -318,7 +318,7 @@ public class CourseController : ControllerBase
         {
             return Unauthorized(new { status = "error", message = "Неверный идентификатор пользователя" });
         }
-    
+
         var course = await _context.Courses
             .Include(c => c.Tasks)
             .FirstOrDefaultAsync(c => c.Id == id);
@@ -337,9 +337,9 @@ public class CourseController : ControllerBase
 
 
         _context.UsersCorses.RemoveRange();
-        
+
         _context.Courses.Remove(course);
-        
+
         var recordsToDelete = _context.UsersCorses.Where(uc => uc.CourseId == id).ToList();
 
         if (recordsToDelete.Any())
@@ -348,15 +348,15 @@ public class CourseController : ControllerBase
         }
 
         try
-            {
-                await _context.SaveChangesAsync();
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при удалении курса");
-                return StatusCode(500, new { status = "error", message = "Ошибка при удалении курса" });
-            }
+        {
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при удалении курса");
+            return StatusCode(500, new { status = "error", message = "Ошибка при удалении курса" });
+        }
     }
 
 
@@ -441,6 +441,7 @@ public class CourseController : ControllerBase
                     {
                         CourseId = course.Id,
                         CourseName = course.Name,
+                        Owner = course.Owner,
                         Subject = course.Subject,
                         Chapter = course.Chapter,
                         Role = userCourse.Role.ToString(),
@@ -480,9 +481,7 @@ public class CourseController : ControllerBase
         };
     }
 
-    
 
- 
     private string GenerateRandomCode(int length = 8)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -490,4 +489,46 @@ public class CourseController : ControllerBase
         return new string(Enumerable.Repeat(chars, length)
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
+    
+    [HttpGet("{courseId}/user/{userId} ")]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<List<PackageCheckModel>>>> GetMyChecks(Guid courseId, Guid userId)
+    {
+        var tasks = await _context.MaterialWorks
+            .Where(t => t.CourseId == courseId)
+            .ToListAsync();
+
+        if (tasks == null)
+        {
+            return NotFound("На курсе нет заданий");
+        }
+        var list = new List<GradeShortModel>();
+        
+        foreach (var task in tasks)
+        {
+            var solution = await _context.Solutions
+                .FirstOrDefaultAsync(s => task.Id == s.TaskId && userId == s.StudentId);
+            
+            
+
+            var grade = await _context.Grades.
+                FirstOrDefaultAsync(g => g.TaskId == task.Id && userId == g.StudentId);
+
+            var model = new GradeShortModel
+            {
+                Score = grade.Score,
+                SolutionId = solution.Id,
+                GradeId = grade.Id,
+                TaskName = task.Name
+            };
+
+            list.Add(model);
+      
+
+        }
+        
+
+        return Ok(list);
+    }
+
 }
