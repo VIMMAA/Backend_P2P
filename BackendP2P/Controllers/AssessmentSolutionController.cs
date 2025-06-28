@@ -84,9 +84,9 @@ namespace MyApi.MapControllers
 
         }
 
-        [HttpPost("{id}/submit")]
+        [HttpPut("{SolutionForCheckId}/submit")]
         [Authorize]
-        public async Task<IActionResult> SubmitCheck(Guid id, [FromBody] SolutionForCheckModel submission)
+        public async Task<IActionResult> SubmitCheck(Guid SolutionForCheckId, [FromBody] SolutionForCheckEditModel submission)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace MyApi.MapControllers
                 var checkTask = await _context.SolutionForChecks
                     .Include(sc => sc.Solution)
                     .ThenInclude(s => s.Task)
-                    .FirstOrDefaultAsync(s => s.Id == id && s.AuthortId == currentUserId);
+                    .FirstOrDefaultAsync(s => s.Id == SolutionForCheckId && s.AuthortId == currentUserId);
 
                 if (checkTask == null)
                 {
@@ -112,7 +112,7 @@ namespace MyApi.MapControllers
                 }
 
                 var packageCheck = await _context.PackageChecks
-                    .FirstOrDefaultAsync(p => p.SolutionForCheckTasks.Any(s => s.Id == id));
+                    .FirstOrDefaultAsync(p => p.SolutionForCheckTasks.Any(s => s.Id == SolutionForCheckId));
 
                 if (packageCheck == null)
                 {
