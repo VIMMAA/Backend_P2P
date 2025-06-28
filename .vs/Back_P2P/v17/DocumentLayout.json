@@ -111,34 +111,7 @@
               "ViewState": "AgIAACsAAAAAAAAAAAAkwD0AAABQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-23T22:59:01.275Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "TaskWorkCreateModel.cs",
-              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
-              "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
-              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
-              "RelativeToolTip": "BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAwAAAAzAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-24T13:10:31.805Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "CourseModel.cs",
-              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CourseModel.cs",
-              "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\CourseModel.cs",
-              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CourseModel.cs",
-              "RelativeToolTip": "BackendP2P\\Models\\DB\\CourseModel.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-24T13:08:45.287Z",
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -158,6 +131,30 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "TaskWorkCreateModel.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
+              "RelativeToolTip": "BackendP2P\\Models\\Request\\TaskWorkCreateModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAwAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-24T13:10:31.805Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CourseModel.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CourseModel.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\CourseModel.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CourseModel.cs",
+              "RelativeToolTip": "BackendP2P\\Models\\DB\\CourseModel.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-24T13:08:45.287Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 3,
               "Title": "CombinedTaskWorkAndCriteriaModels.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\CombinedTaskWorkAndCriteriaModels.cs",
@@ -166,8 +163,7 @@
               "RelativeToolTip": "BackendP2P\\Models\\Request\\CombinedTaskWorkAndCriteriaModels.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-24T05:41:31.995Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-24T05:41:31.995Z"
             },
             {
               "$type": "Document",
@@ -239,8 +235,7 @@
               "RelativeToolTip": "BackendP2P\\Models\\Request\\CriteriaAssignmentCreateModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-24T04:21:55.206Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-24T04:21:55.206Z"
             },
             {
               "$type": "Document",
@@ -324,8 +319,7 @@
               "RelativeToolTip": "BackendP2P\\Controllers\\SolutionController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUBAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-24T03:12:37.825Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-24T03:12:37.825Z"
             },
             {
               "$type": "Document",
@@ -349,8 +343,7 @@
               "RelativeToolTip": "BackendP2P\\Models\\DB\\MaterialWorkModel.cs",
               "ViewState": "AgIAAAgAAAAAAAAAAAAQwA8AAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-24T03:09:20.729Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-24T03:09:20.729Z"
             },
             {
               "$type": "Document",
@@ -372,7 +365,7 @@
               "RelativeDocumentMoniker": "BackendP2P\\appsettings.json",
               "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\appsettings.json",
               "RelativeToolTip": "BackendP2P\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-06-24T02:23:44.587Z",
               "EditorCaption": ""
