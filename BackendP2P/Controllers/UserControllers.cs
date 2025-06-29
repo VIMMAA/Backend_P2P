@@ -329,7 +329,58 @@ public class UserController : ControllerBase
     }
 }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("profile/{anotherUserId}")]
+        [Authorize]
+
+        public async Task<IActionResult> GetUser(Guid anotherUserId)
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            if (_tokenRevocationService.IsTokenRevoked(token))
+            {
+                return Unauthorized(new { status = "error", message = "Unauthorized access" });
+            }
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return BadRequest(new { message = "Invalid token" });
+            }
+
+            var userId = Guid.Parse(userIdClaim.Value);
+
+            var user = await _context.Users.FindAsync(anotherUserId);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "user not found" });
+            }
+
+
+            try
+            {
+                var userAnswer = new
+                {
+                    firstName = user.FirstName,
+                    middleName = user.MiddleName,
+                    lastName = user.LastName,
+                    birthday = user.Birthday,
+                    email = user.Email,
+                    id = anotherUserId
+                };
+
+                return Ok(userAnswer);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Error registering user: {e}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+
+            }
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
