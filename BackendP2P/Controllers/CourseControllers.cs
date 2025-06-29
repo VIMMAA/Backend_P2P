@@ -490,45 +490,50 @@ public class CourseController : ControllerBase
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
     
-    [HttpGet("{courseId}/user/{userId} ")]
-    [Authorize]
-    public async Task<ActionResult<IEnumerable<List<GradeShortModel>>>> GetMyChecks(Guid courseId, Guid userId)
+    [HttpGet("{courseId}/user/{userId}")]  // Убрал пробел
+[Authorize]
+public async Task<ActionResult<IEnumerable<GradeShortModel>>> GetMyChecks(Guid courseId, Guid userId)
+{
+    var tasks = await _context.MaterialWorks
+        .Where(t => t.CourseId == courseId)
+        .ToListAsync();
+
+    if (tasks == null || !tasks.Any())
     {
-        var tasks = await _context.MaterialWorks
-            .Where(t => t.CourseId == courseId)
-            .ToListAsync();
-
-        if (tasks == null)
-        {
-            return NotFound("На курсе нет заданий");
-        }
-        var list = new List<GradeShortModel>();
-        
-        foreach (var task in tasks)
-        {
-            var solution = await _context.Solutions
-                .FirstOrDefaultAsync(s => task.Id == s.TaskId && userId == s.StudentId);
-            
-            
-
-            var grade = await _context.Grades.
-                FirstOrDefaultAsync(g => g.TaskId == task.Id && userId == g.StudentId);
-
-            var model = new GradeShortModel
-            {
-                Score = grade.Score,
-                SolutionId = solution.Id,
-                GradeId = grade.Id,
-                TaskName = task.Name
-            };
-
-            list.Add(model);
-      
-
-        }
-        
-
-        return Ok(list);
+        return NotFound("На курсе нет заданий");
     }
+    
+    var list = new List<GradeShortModel>();
+    
+    foreach (var task in tasks)
+    {
+        var solution = await _context.Solutions
+            .FirstOrDefaultAsync(s => task.Id == s.TaskId && userId == s.StudentId);
+        
+        var grade = await _context.Grades
+            .FirstOrDefaultAsync(g => g.TaskId == task.Id && userId == g.StudentId);
+
+        // Пропускаем задания без решения или оценки
+        if (solution == null || grade == null)
+            continue;
+
+        var model = new GradeShortModel
+        {
+            Score = grade.Score,
+            SolutionId = solution.Id,
+            GradeId = grade.Id,
+            TaskName = task.Name
+        };
+
+        list.Add(model);
+    }
+    
+    if (!list.Any())
+    {
+        return NotFound("Не найдено ни одного решения или оценки для данного пользователя");
+    }
+
+    return Ok(list);
+}
 
 }
