@@ -182,7 +182,7 @@ namespace MyApi.MapControllers
         [Authorize]
         [HttpGet("solution/{solutionId}")]
 
-        public async Task<IActionResult> GetAssessmentsBySolutionId(Guid solutionId)
+        public async Task<ActionResult<AssessmentList>> GetAssessmentsBySolutionId(Guid solutionId)
         {
             var solution = await _context.Solutions
                 .Include(s => s.Task)
