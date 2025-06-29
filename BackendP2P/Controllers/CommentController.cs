@@ -80,59 +80,6 @@ namespace BackendP2P.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
-        [HttpPut("{taskId}/task/{commentId}")]
-        public async Task<IActionResult> EditCommentTaskWork(Guid taskId, Guid commentId, [FromBody] CommentCreateModel dto)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-            Guid userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            try
-            {
-                TaskModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
-
-                if (task == null)
-                {
-                    task = await _context.MaterialReads.Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
-                }
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                CommentModel? comment = await _context.Comments.FirstOrDefaultAsync(u => u.Id == commentId && u.AuthorId == userId);
-
-                if (comment == null)
-                {
-                    return NotFound("Comment not found");
-                }
-
-                comment.Text = dto.Text;
-
-                if (task is MaterialWorkModel work)
-                {
-                    _context.MaterialWorks.Update(work);
-                }
-                else if (task is MaterialReadModel read)
-                {
-                    _context.MaterialReads.Update(read);
-                }
-
-                _context.Comments.Update(comment);
-
-                await _context.SaveChangesAsync();
-
-                return Ok(new ResponseModel("Comment updated in task"));
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
         [HttpDelete("{taskId}/task/{commentId}")]
         public async Task<IActionResult> CommentDeleteTaskWork(Guid commentId, Guid taskId)
         {

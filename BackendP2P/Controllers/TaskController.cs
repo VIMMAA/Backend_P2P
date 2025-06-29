@@ -255,87 +255,6 @@ namespace ApiB.Controllers
             }
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
-        [HttpPut("{taskId}/materialWork")]
-        public async Task<IActionResult> EditMaterialWork(Guid taskId, [FromBody] MaterialWorkEditModel dto)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-
-            try
-            {
-                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
-
-                if (task == null)
-                    return NotFound(new { message = "Task not found" });
-
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-                task.Name = dto.Name;
-                task.Deadline = dto.Deadline;
-                task.Description = dto.Description;
-
-                if (task.Deadline < DateTime.UtcNow)
-                {
-                    return BadRequest("Deadline expired");
-                }
-
-                _context.MaterialWorks.Update(task);
-                await _context.SaveChangesAsync();
-
-                return Ok(task);
-            }
-            catch(Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
-        [HttpPut("{taskId}/materialRead")]
-        public async Task<IActionResult> EditMaterialRead(Guid taskId, [FromBody] MaterialReadEditModel dto)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-
-            try
-            {
-                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
-
-                if (task == null)
-                    return NotFound(new { message = "Task not found" });
-
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-                task.Name = dto.Name;
-                task.Description = dto.Description;
-
-                _context.MaterialReads.Update(task);
-                await _context.SaveChangesAsync();
-
-                return Ok(task);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResponseModel))]
         [HttpDelete("{taskId}/materialWork")]
         public async Task<IActionResult> DeleteMaterialWork(Guid taskId)
@@ -407,158 +326,7 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
-        [HttpPost("{taskId}/materialWork/Criteria")]
-        public async Task<IActionResult> CreateCriteria(Guid taskId, [FromBody] CriteriaAssignmentCreateModel dto)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
 
-            try
-            {
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-
-                CriteriaAssignment criteria = new CriteriaAssignment
-                {
-                    Id = Guid.NewGuid(),
-                    Conditions = dto.Conditions,
-                    CountScore = dto.CountScore,
-                    Title = dto.Title,
-                    GradeModel = task.CriteriaAssignments?.FirstOrDefault(c => c.GradeModel != null)?.GradeModel,
-                    GradeModelId = task.CriteriaAssignments?.FirstOrDefault(c => c.GradeModelId != null)?.GradeModelId,
-                    MaterialWorkModel = task,
-                    MaterialWorkModelId = task.Id
-                };
-
-                if (task.Deadline < DateTime.UtcNow)
-                {
-                    return BadRequest("Deadline is outdated");
-                }
-
-                task.Score += criteria.CountScore;
-                task.CriteriaAssignments?.Add(criteria);
-
-                await _context.CriteriaAssignments.AddAsync(criteria);
-                _context.MaterialWorks.Update(task);
-                await _context.SaveChangesAsync();
-
-                return Ok(task);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-        [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(ResponseModel))]
-        [HttpDelete("{taskId}/materialWork/Criteria/{criteriaId}")]
-        public async Task<IActionResult> DeleteCriteria(Guid taskId, Guid criteriaId)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-            try
-            {
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-                CriteriaAssignment? criteria = task.CriteriaAssignments.FirstOrDefault(u => criteriaId == u.Id);
-
-                if (criteria == null)
-                {
-                    return NotFound("Criteria not found");
-                }
-
-                task.Score -= criteria.CountScore;
-                task.CriteriaAssignments?.Remove(criteria);
-
-                _context.CriteriaAssignments.Remove(criteria);
-                _context.MaterialWorks.Update(task);
-                await _context.SaveChangesAsync();
-                return Ok(new ResponseModel("Criteria deleted"));
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
-        [HttpPut("{taskId}/materialWork/Criteria/{criteriaId}")]
-        public async Task<IActionResult> EditCriteria(Guid taskId, Guid criteriaId, [FromBody] CriteriaAssignmentCreateModel dto)
-        {
-            IActionResult? authResult = AuthenticateService();
-            if (authResult != null) return authResult;
-            try
-            {
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
-
-                if (task == null)
-                {
-                    return NotFound("Task not found");
-                }
-
-                IActionResult? httpResult = IsForbid(false, task.CourseId);
-                if (httpResult != null)
-                {
-                    return httpResult;
-                }
-
-
-                if (task.Deadline < DateTime.UtcNow)
-                {
-                    return BadRequest("Deadline is outdated");
-                }
-
-                CriteriaAssignment? criteria = task.CriteriaAssignments.FirstOrDefault(u => criteriaId == u.Id);
-
-                if (criteria == null)
-                {
-                    return NotFound("Criteria not found");
-                }
-
-                task.Score = task.CriteriaAssignments.Select(s => s.CountScore).Sum();
-
-                criteria.Title = dto.Title;
-                criteria.Conditions = dto.Conditions;
-                criteria.CountScore = dto.CountScore;
-
-                _context.CriteriaAssignments.Update(criteria);
-                _context.MaterialWorks.Update(task);
-                await _context.SaveChangesAsync();
-
-                return Ok(task);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"\nERROR\n{ex}");
-
-                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
-            }
-        }
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CriteriaAssignment))]
         [HttpGet("{taskId}/materialWork/Criteria/{criteriaId}")]
         public async Task<IActionResult> GetCriteria(Guid taskId, Guid criteriaId)
@@ -678,133 +446,193 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
-        [HttpPost("task/{taskId}/file")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AttachedFileModel))]
-        public async Task<IActionResult> AddFileToSolution(Guid taskId, [FromBody] AttachedFileDto file)
+
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialWorkModel))]
+        [HttpPut("{courseId}/materialWork/{taskId}")]
+        public async Task<IActionResult> MaterialWorkEdit([FromBody] CombinedMaterialWorkEdit combinedDto, Guid courseId, Guid taskId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
 
+            IActionResult? httpResult = IsForbid(false, courseId);
+            if (httpResult != null)
+            {
+                return httpResult;
+            }
+
             try
             {
-                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-                TaskModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
-                WorkOrRead type = WorkOrRead.Work;
-
-                if (task == null)
-                {
-                    task = await _context.MaterialReads.Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
-                    type = WorkOrRead.Read;
-                }
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
                     return NotFound("Task not found");
                 }
 
-                IActionResult? httpResult = IsForbid(true, task.CourseId);
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                if (httpResult != null)
+                MaterialWorkEditModel taskDto = combinedDto.MaterialWorkEdit;
+                List<CriteriaAssignmentCreateModel> criteriaDtos = combinedDto.CriteriaAssignments;
+                List<AttachedFileDto> filesDto = combinedDto.Files;
+
+                List<AttachedFileModel> filesToDelete = task.AttachedFiles.ToList();
+                List<CriteriaAssignment> criteriasToDelete = task.CriteriaAssignments.ToList();
+
+                foreach (var file in filesToDelete)
                 {
-                    return httpResult;
+                    task.AttachedFiles.Remove(file);
+                }
+                 
+                foreach (var file in criteriasToDelete)
+                {
+                    task.CriteriaAssignments.Remove(file);
                 }
 
-                AttachedFileModel answer = new AttachedFileModel
-                {
-                    Id = Guid.NewGuid(),
-                    Data = file.Data,
-                    Name = file.Name
-                };
+                _context.AttachedFiles.RemoveRange(filesToDelete);
+                _context.CriteriaAssignments.RemoveRange(criteriasToDelete);
 
-                if (type == WorkOrRead.Work)
-                {
-                    answer.MaterialWorkId = task.Id;
-                    answer.WorkModel = (MaterialWorkModel)task;
+                task.Description = taskDto.Description;
+                task.Deadline = taskDto.Deadline;
+                task.Name = taskDto.Name;
 
-                    task.AttachedFiles.Add(answer);
-                    _context.MaterialWorks.Update((MaterialWorkModel)task);
-                } else if (type == WorkOrRead.Read)
-                {
-                    answer.MaterialReadId = task.Id;
-                    answer.ReadModel = (MaterialReadModel)task;
+                List<CriteriaAssignment> criterias = new List<CriteriaAssignment>();
 
-                    task.AttachedFiles.Add(answer);
-                    _context.MaterialReads.Update((MaterialReadModel)task);
+                foreach (CriteriaAssignmentCreateModel criteriaDto in criteriaDtos)
+                {
+                    CriteriaAssignment criteria = new CriteriaAssignment
+                    {
+                        Id = Guid.NewGuid(),
+                        CountScore = criteriaDto.CountScore,
+                        Conditions = criteriaDto.Conditions,
+                        GradeModel = null,//PLACE HERE FOREIGN KEY
+                        GradeModelId = null,//Nav property here too
+                        Title = criteriaDto.Title,
+                        MaterialWorkModel = task,
+                        MaterialWorkModelId = task.Id
+                    };
+                    criterias.Add(criteria);
                 }
 
-                _context.AttachedFiles.Add(answer);
+                task.CriteriaAssignments = criterias;
 
+                task.Score = task.CriteriaAssignments.Select(s => s.CountScore).Sum();
+
+                if (task.Deadline < DateTime.UtcNow)
+                {
+                    return BadRequest("Deadline is outdated");
+                }
+
+                List<AttachedFileModel> attachedFiles = new List<AttachedFileModel>();
+
+                foreach (var file in filesDto)
+                {
+                    AttachedFileModel item = new AttachedFileModel
+                    {
+                        Id = Guid.NewGuid(),
+                        Data = file.Data,
+                        Name = file.Name,
+                        MaterialWorkId = task.Id,
+                        WorkModel = task
+                    };
+                    attachedFiles.Add(item);
+                }
+
+                task.AttachedFiles ??= attachedFiles;
+
+                if (filesDto != null)
+                {
+                    await _context.AttachedFiles.AddRangeAsync(attachedFiles);
+                }
+
+                _context.MaterialWorks.Update(task);
+                await _context.CriteriaAssignments.AddRangeAsync(criterias);
                 await _context.SaveChangesAsync();
 
-                return Ok(answer);
+                return Ok(task);
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"\nERROR\n{ex}");
+
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
 
-        [HttpDelete("task/{taskId}/file/{fileId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> RemoveFileFromSolution(Guid taskId, Guid fileId)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
+        [HttpPut("{courseId}/materialRead/{taskId}")]
+        public async Task<IActionResult> CreateMaterialRead([FromBody] CombinedMaterialReadAndAttachedFiles combinedDto, Guid courseId, Guid taskId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
+
+            IActionResult? httpResult = IsForbid(false, courseId);
+            if (httpResult != null)
+            {
+                return httpResult;
+            }
 
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                TaskModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
-                WorkOrRead type = WorkOrRead.Work;
+                MaterialReadCreate materialReadDto = combinedDto.MaterialReadCreate;
+                List<AttachedFileDto> filesDto = combinedDto.Files;
 
-                if (task == null)
-                {
-                    task = await _context.MaterialReads.Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
-                    type = WorkOrRead.Read;
-                }
+                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.AttachedFiles).Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
                     return NotFound("Task not found");
                 }
 
-                IActionResult? httpResult = IsForbid(true, task.CourseId);
+                task.Description = materialReadDto.Description;
+                task.Name = materialReadDto.Name;
 
-                if (httpResult != null)
+                List<AttachedFileModel> filesToDelete = task.AttachedFiles.ToList();
+                
+                foreach (var file in filesToDelete)
                 {
-                    return httpResult;
+                    task.AttachedFiles.Remove(file);
                 }
 
-                AttachedFileModel? answer = task.AttachedFiles.FirstOrDefault(f => f.Id == fileId);
+                _context.AttachedFiles.RemoveRange(filesToDelete);
 
-                if (answer == null)
-                    return NotFound("File not found");
+                List<AttachedFileModel> attachedFiles = new List<AttachedFileModel>();
 
-                if (type == WorkOrRead.Work)
+                foreach (var file in filesDto)
                 {
-                    task.AttachedFiles.Remove(answer);
-                    _context.MaterialWorks.Update((MaterialWorkModel)task);
-                }
-                else if (type == WorkOrRead.Read)
-                {
-                    task.AttachedFiles.Remove(answer);
-                    _context.MaterialReads.Update((MaterialReadModel)task);
+                    AttachedFileModel item = new AttachedFileModel
+                    {
+                        Id = Guid.NewGuid(),
+                        Data = file.Data,
+                        Name = file.Name,
+                        MaterialReadId = task.Id,
+                        ReadModel = task
+                    };
+                    attachedFiles.Add(item);
                 }
 
-                _context.AttachedFiles.Remove(answer);
+                task.AttachedFiles ??= attachedFiles;
+
+                if (filesDto != null)
+                {
+                    await _context.AttachedFiles.AddRangeAsync(attachedFiles);
+                }
+
+                _context.MaterialReads.Update(task);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "File removed" });
+                return Ok(task);
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"\nERROR\n{ex}");
+
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+
+
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)
