@@ -136,6 +136,10 @@ namespace BackendP2P.Controllers
                     return BadRequest("Deadline expired. You can not delete solution");
                 }
 
+                var attachedFiles = await _context.AttachedFiles.Where(f => f.SolutionId == solution.Id).ToListAsync();
+
+                _context.AttachedFiles.RemoveRange(attachedFiles);
+
                 task.Solutions.Remove(solution);
 
                 _context.MaterialWorks.Update(task);
