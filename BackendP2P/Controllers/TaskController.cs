@@ -572,10 +572,10 @@ namespace ApiB.Controllers
                     return httpResult;
                 }
 
-                if (task.Deadline < DateTime.UtcNow)
-                {
-                    return BadRequest("Deadline is outdated");
-                }
+                //if (task.Deadline < DateTime.UtcNow)
+                //{
+                //    return BadRequest("Deadline is outdated");
+                //}
 
                 List<CriteriaAssignment>? criterias = task.CriteriaAssignments.ToList();
 
@@ -585,6 +585,45 @@ namespace ApiB.Controllers
                 }
 
                 return Ok(criterias);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WorkOrRead))]
+        [HttpGet("{taskId}/CheckType")]
+        public async Task<IActionResult> GetTypeTask(Guid taskId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+            try
+            {
+                TaskModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                WorkOrRead answer = WorkOrRead.Work;
+
+                if (task == null)
+                {
+                    task = await _context.MaterialReads.Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
+                    answer = WorkOrRead.Read;
+                }
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
+
+                return Ok(answer);
             }
             catch (Exception ex)
             {
