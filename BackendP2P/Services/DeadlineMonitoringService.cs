@@ -110,7 +110,7 @@ public class DeadlineProcessingService : BackgroundService
             GradeModel grade = new GradeModel
             {
                 Id = Guid.NewGuid(),
-                Score = isAllChecked ? fin : (int)(fin * task.Penalty),
+                Score = isAllChecked ? fin : (int)(fin * (1-task.Penalty)),
                 StudentId = solution.StudentId,
                 TaskId = solution.TaskId,
                 Remark = "",
