@@ -3,20 +3,44 @@
   "WorkspaceRootPath": "D:\\Programming\\Projects\\Backend_P2P\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\solutioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\solutioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\taskcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\taskcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\coursecontrollers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\coursecontrollers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\services\\solutiondistributionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\services\\solutiondistributionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\db\\materialworkmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\models\\db\\materialworkmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\request\\packageshort.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\models\\request\\packageshort.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\assessmentsolutioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\assessmentsolutioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\commentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\commentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\backendp2p.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\backendp2p.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\solutioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\solutioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\controllers\\coursecontrollers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\controllers\\coursecontrollers.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\request\\combinedmaterialreadandattachedfiles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -39,10 +63,6 @@
       "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\models\\db\\solutionmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\db\\materialreadmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\models\\db\\materialreadmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -53,10 +73,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\db\\checkpackage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\models\\db\\checkpackage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\backendp2p.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
-      "RelativeMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|solutionrelative:backendp2p\\backendp2p.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{98B6F0BA-FACB-0013-40EB-2A8EA6C96E5A}|BackendP2P\\BackendP2P.csproj|d:\\programming\\projects\\backend_p2p\\backendp2p\\models\\request\\commentcreatemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -130,17 +146,17 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 29,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "TaskController.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\TaskController.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Controllers\\TaskController.cs",
               "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\TaskController.cs",
               "RelativeToolTip": "BackendP2P\\Controllers\\TaskController.cs",
-              "ViewState": "AgIAAP8CAAAAAAAAAAAAAPgCAAAyAAAAAAAAAA==",
+              "ViewState": "AgIAACsAAAAAAAAAAIAwwDMAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-23T22:59:01.275Z",
               "IsPinned": true,
@@ -148,15 +164,54 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "CourseControllers.cs",
-              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\CourseControllers.cs",
-              "RelativeDocumentMoniker": "BackendP2P\\Controllers\\CourseControllers.cs",
-              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\CourseControllers.cs",
-              "RelativeToolTip": "BackendP2P\\Controllers\\CourseControllers.cs",
-              "ViewState": "AgIAADUAAAAAAAAAAAAQwDwAAAAJAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "SolutionDistributionService.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Services\\SolutionDistributionService.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Services\\SolutionDistributionService.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Services\\SolutionDistributionService.cs",
+              "RelativeToolTip": "BackendP2P\\Services\\SolutionDistributionService.cs",
+              "ViewState": "AgIAAG0AAAAAAAAAAAAAADkAAAA9AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-29T07:55:15.435Z",
+              "WhenOpened": "2025-06-29T11:51:03.026Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AssessmentSolutionController.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\AssessmentSolutionController.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Controllers\\AssessmentSolutionController.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\AssessmentSolutionController.cs",
+              "RelativeToolTip": "BackendP2P\\Controllers\\AssessmentSolutionController.cs",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAQwEsAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-29T11:36:01.158Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PackageShort.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\PackageShort.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\PackageShort.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\PackageShort.cs",
+              "RelativeToolTip": "BackendP2P\\Models\\Request\\PackageShort.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAqwA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-29T11:35:51.014Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CommentController.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\CommentController.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Controllers\\CommentController.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\CommentController.cs",
+              "RelativeToolTip": "BackendP2P\\Controllers\\CommentController.cs",
+              "ViewState": "AgIAAMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-29T10:49:53.057Z",
               "EditorCaption": ""
             },
             {
@@ -177,7 +232,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 9,
+              "Title": "CourseControllers.cs",
+              "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\CourseControllers.cs",
+              "RelativeDocumentMoniker": "BackendP2P\\Controllers\\CourseControllers.cs",
+              "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\CourseControllers.cs",
+              "RelativeToolTip": "BackendP2P\\Controllers\\CourseControllers.cs",
+              "ViewState": "AgIAADUAAAAAAAAAAAAQwDwAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-29T07:55:15.435Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
               "Title": "CombinedTaskWorkAndCriteriaModels.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\CombinedTaskWorkAndCriteriaModels.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\CombinedTaskWorkAndCriteriaModels.cs",
@@ -189,7 +256,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 13,
               "Title": "AssessmentList.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\AssessmentList.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\AssessmentList.cs",
@@ -201,7 +268,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 10,
               "Title": "CombinedMaterialReadAndAttachedFiles.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\CombinedMaterialReadAndAttachedFiles.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\CombinedMaterialReadAndAttachedFiles.cs",
@@ -213,7 +280,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 17,
               "Title": "CheckPackage.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CheckPackage.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\CheckPackage.cs",
@@ -225,7 +292,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 18,
               "Title": "CommentCreateModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\CommentCreateModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\CommentCreateModel.cs",
@@ -237,7 +304,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 21,
               "Title": "Role.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Enums\\Role.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Enums\\Role.cs",
@@ -249,7 +316,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 20,
               "Title": "WorkOrRead.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Enums\\WorkOrRead.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Enums\\WorkOrRead.cs",
@@ -261,7 +328,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 7,
               "Title": "BackendP2P.http",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\BackendP2P.http",
               "RelativeDocumentMoniker": "BackendP2P\\BackendP2P.http",
@@ -269,11 +336,12 @@
               "RelativeToolTip": "BackendP2P\\BackendP2P.http",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
-              "WhenOpened": "2025-06-28T19:01:43.083Z"
+              "WhenOpened": "2025-06-28T19:01:43.083Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 22,
               "Title": "MaterialReadEditModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\MaterialReadEditModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\MaterialReadEditModel.cs",
@@ -285,7 +353,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 23,
               "Title": "TaskEditModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\TaskEditModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\TaskEditModel.cs",
@@ -297,7 +365,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 12,
               "Title": "MaterialReadCreate.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\MaterialReadCreate.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\MaterialReadCreate.cs",
@@ -309,7 +377,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 25,
               "Title": "UserCourseDto.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\UserCourseDto.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\UserCourseDto.cs",
@@ -321,7 +389,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 26,
               "Title": "20250628173250_initialcreate.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Migrations\\20250628173250_initialcreate.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Migrations\\20250628173250_initialcreate.cs",
@@ -333,7 +401,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 19,
               "Title": "SolutionCreateModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\SolutionCreateModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\SolutionCreateModel.cs",
@@ -345,7 +413,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 28,
               "Title": "SolutionForCheckModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\SolutionForCheckModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\SolutionForCheckModel.cs",
@@ -357,7 +425,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 31,
               "Title": "start.sh",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\start.sh",
               "RelativeDocumentMoniker": "BackendP2P\\start.sh",
@@ -369,7 +437,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 24,
               "Title": "CriteriaAssignmentCreateModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\CriteriaAssignmentCreateModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\CriteriaAssignmentCreateModel.cs",
@@ -381,7 +449,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 32,
               "Title": "AssessmentCreateModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\Request\\AssessmentCreateModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\Request\\AssessmentCreateModel.cs",
@@ -393,7 +461,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 30,
               "Title": "GradeModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\GradeModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\GradeModel.cs",
@@ -405,7 +473,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 29,
               "Title": "CriteriaAssignments.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\CriteriaAssignments.cs",
@@ -417,7 +485,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 27,
               "Title": "Context.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Context.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Context.cs",
@@ -429,7 +497,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 33,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Program.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Program.cs",
@@ -441,7 +509,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 14,
               "Title": "SolutionModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\SolutionModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\SolutionModel.cs",
@@ -453,20 +521,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 8,
               "Title": "SolutionController.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\SolutionController.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Controllers\\SolutionController.cs",
               "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Controllers\\SolutionController.cs",
               "RelativeToolTip": "BackendP2P\\Controllers\\SolutionController.cs",
-              "ViewState": "AgIAADoBAAAAAAAAAAAAwEIBAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEIBAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-24T03:12:37.825Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 15,
               "Title": "MaterialReadModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\MaterialReadModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\MaterialReadModel.cs",
@@ -478,19 +546,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "MaterialWorkModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\MaterialWorkModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\MaterialWorkModel.cs",
               "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\MaterialWorkModel.cs",
               "RelativeToolTip": "BackendP2P\\Models\\DB\\MaterialWorkModel.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwBMAAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAhwA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-24T03:09:20.729Z"
+              "WhenOpened": "2025-06-24T03:09:20.729Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 16,
               "Title": "TaskModel.cs",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\Models\\DB\\TaskModel.cs",
               "RelativeDocumentMoniker": "BackendP2P\\Models\\DB\\TaskModel.cs",
@@ -502,15 +571,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 5,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\appsettings.json",
               "RelativeDocumentMoniker": "BackendP2P\\appsettings.json",
               "ToolTip": "D:\\Programming\\Projects\\Backend_P2P\\BackendP2P\\appsettings.json",
               "RelativeToolTip": "BackendP2P\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAByAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-06-24T02:23:44.587Z"
+              "WhenOpened": "2025-06-24T02:23:44.587Z",
+              "EditorCaption": ""
             }
           ]
         }
