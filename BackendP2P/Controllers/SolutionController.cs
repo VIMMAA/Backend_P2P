@@ -322,8 +322,6 @@ namespace BackendP2P.Controllers
             }
         }
 
-
-
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)

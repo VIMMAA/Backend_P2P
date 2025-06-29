@@ -678,6 +678,133 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
+        [HttpPost("task/{taskId}/file")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AttachedFileModel))]
+        public async Task<IActionResult> AddFileToSolution(Guid taskId, [FromBody] AttachedFileDto file)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                TaskModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                WorkOrRead type = WorkOrRead.Work;
+
+                if (task == null)
+                {
+                    task = await _context.MaterialReads.Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
+                    type = WorkOrRead.Read;
+                }
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
+
+                AttachedFileModel answer = new AttachedFileModel
+                {
+                    Id = Guid.NewGuid(),
+                    Data = file.Data,
+                    Name = file.Name
+                };
+
+                if (type == WorkOrRead.Work)
+                {
+                    answer.MaterialWorkId = task.Id;
+                    answer.WorkModel = (MaterialWorkModel)task;
+
+                    task.AttachedFiles.Add(answer);
+                    _context.MaterialWorks.Update((MaterialWorkModel)task);
+                } else if (type == WorkOrRead.Read)
+                {
+                    answer.MaterialReadId = task.Id;
+                    answer.ReadModel = (MaterialReadModel)task;
+
+                    task.AttachedFiles.Add(answer);
+                    _context.MaterialReads.Update((MaterialReadModel)task);
+                }
+
+                _context.AttachedFiles.Add(answer);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(answer);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
+
+        [HttpDelete("task/{taskId}/file/{fileId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> RemoveFileFromSolution(Guid taskId, Guid fileId)
+        {
+            IActionResult? authResult = AuthenticateService();
+            if (authResult != null) return authResult;
+
+            try
+            {
+                var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                TaskModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                WorkOrRead type = WorkOrRead.Work;
+
+                if (task == null)
+                {
+                    task = await _context.MaterialReads.Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
+                    type = WorkOrRead.Read;
+                }
+
+                if (task == null)
+                {
+                    return NotFound("Task not found");
+                }
+
+                IActionResult? httpResult = IsForbid(true, task.CourseId);
+
+                if (httpResult != null)
+                {
+                    return httpResult;
+                }
+
+                AttachedFileModel? answer = task.AttachedFiles.FirstOrDefault(f => f.Id == fileId);
+
+                if (answer == null)
+                    return NotFound("File not found");
+
+                if (type == WorkOrRead.Work)
+                {
+                    task.AttachedFiles.Remove(answer);
+                    _context.MaterialWorks.Update((MaterialWorkModel)task);
+                }
+                else if (type == WorkOrRead.Read)
+                {
+                    task.AttachedFiles.Remove(answer);
+                    _context.MaterialReads.Update((MaterialReadModel)task);
+                }
+
+                _context.AttachedFiles.Remove(answer);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "File removed" });
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"\nERROR\n{ex}");
+                return StatusCode(500, new { Status = "error", Message = "SWAGA" });
+            }
+        }
         private IActionResult? AuthenticateService()
         {
             if (!User.Identity.IsAuthenticated)
