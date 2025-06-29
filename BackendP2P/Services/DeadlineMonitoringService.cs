@@ -74,7 +74,7 @@ public class DeadlineProcessingService : BackgroundService
         foreach (var group in solutionsGroups)
         {
             var sum = 0.0;
-            var solution = group.First().Solution;
+            var solution = group.First().Solution; 
             if (solution == null) continue;
 
 
@@ -102,10 +102,15 @@ public class DeadlineProcessingService : BackgroundService
             }
             var fin = (int)Math.Round(sum, MidpointRounding.AwayFromZero);
 
+            bool isAllChecked = !_context.SolutionForChecks
+                .Any(s => s.AuthortId == solution.StudentId && !s.IsChecked);
+
+            var task = _context.MaterialWorks.FirstOrDefault(t => t.Id == solution.TaskId);
+
             GradeModel grade = new GradeModel
             {
                 Id = Guid.NewGuid(),
-                Score = fin,
+                Score = isAllChecked ? fin : (int)(fin * task.Penalty),
                 StudentId = solution.StudentId,
                 TaskId = solution.TaskId,
                 Remark = "",
@@ -117,4 +122,3 @@ public class DeadlineProcessingService : BackgroundService
         await context.SaveChangesAsync();
     }
 }
-

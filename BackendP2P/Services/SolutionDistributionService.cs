@@ -98,7 +98,6 @@ public class SolutionDistributionService
                     .Select(c => new AssessmentModel
                     {
                         Id = Guid.NewGuid(),
-                        Score = 0,
                         MaxScore = c.CountScore,
                         Remark = c.Conditions
                     })
@@ -133,7 +132,6 @@ public class SolutionDistributionService
                 .Select(c => new AssessmentModel
                 {
                     Id = Guid.NewGuid(),
-                    Score = 0,
                     MaxScore = c.CountScore,
                     Remark = c.Conditions
                 })
@@ -159,7 +157,7 @@ public class SolutionDistributionService
             Id = Guid.NewGuid(),
             SolutionForCheckTasks = checkAssignments,
             TaskId = task.Id,
-            Deadline = DateTime.UtcNow.AddDays(7),
+            Deadline = DateTime.UtcNow.AddMinutes(15),
             IsTeacher = isTeacherCheckRequired,
             IsProcessed = false
         });
