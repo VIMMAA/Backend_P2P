@@ -279,6 +279,15 @@ namespace ApiB.Controllers
                 }
 
 
+                var solutionIds = task.Solutions.Select(s => s.Id).ToList();
+
+                var filesFromSolutions = await _context.AttachedFiles
+                    .Where(f => solutionIds.Contains(f.SolutionId!.Value))
+                    .ToListAsync();
+
+                _context.AttachedFiles.RemoveRange(filesFromSolutions);
+                _context.AttachedFiles.RemoveRange(task.AttachedFiles);
+
                 _context.MaterialWorks.Remove(task);
                 await _context.SaveChangesAsync();
 

@@ -686,3 +686,10 @@ D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\BackendP
 D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\BackendP2P.runtimeconfig.json
 D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\BackendP2P.staticwebassets.endpoints.json
 D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\taskData.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\publish\web.config
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\publish\appsettings.Development.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\publish\appsettings.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\publish\BackendP2P.deps.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\publish\BackendP2P.runtimeconfig.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\publish\BackendP2P.staticwebassets.endpoints.json
+D:\Programming\Projects\Backend_P2P\backendp2p\bin\Debug\net9.0\publish\publish\taskData.json
