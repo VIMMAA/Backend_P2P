@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendP2P.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250629061857_filetotask")]
-    partial class filetotask
+    [Migration("20250629125210_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -70,17 +70,22 @@ namespace BackendP2P.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("ReadModelId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("SolutionId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TaskModelId")
+                    b.Property<Guid?>("WorkModelId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ReadModelId");
+
                     b.HasIndex("SolutionId");
 
-                    b.HasIndex("TaskModelId");
+                    b.HasIndex("WorkModelId");
 
                     b.ToTable("AttachedFiles");
                 });
@@ -545,15 +550,23 @@ namespace BackendP2P.Migrations
 
             modelBuilder.Entity("Api.Models.AttachedFileModel", b =>
                 {
+                    b.HasOne("Domain.Entities.MaterialReadModel", "ReadModel")
+                        .WithMany("AttachedFiles")
+                        .HasForeignKey("ReadModelId");
+
                     b.HasOne("Api.Models.SolutionModel", "Solution")
                         .WithMany("AttachedFiles")
                         .HasForeignKey("SolutionId");
 
-                    b.HasOne("Api.Models.TaskModel", null)
+                    b.HasOne("Domain.Entities.MaterialWorkModel", "WorkModel")
                         .WithMany("AttachedFiles")
-                        .HasForeignKey("TaskModelId");
+                        .HasForeignKey("WorkModelId");
+
+                    b.Navigation("ReadModel");
 
                     b.Navigation("Solution");
+
+                    b.Navigation("WorkModel");
                 });
 
             modelBuilder.Entity("Api.Models.CommentModel", b =>
@@ -756,8 +769,6 @@ namespace BackendP2P.Migrations
 
             modelBuilder.Entity("Api.Models.TaskModel", b =>
                 {
-                    b.Navigation("AttachedFiles");
-
                     b.Navigation("Comments");
                 });
 
@@ -767,8 +778,15 @@ namespace BackendP2P.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Entities.MaterialReadModel", b =>
+                {
+                    b.Navigation("AttachedFiles");
+                });
+
             modelBuilder.Entity("Domain.Entities.MaterialWorkModel", b =>
                 {
+                    b.Navigation("AttachedFiles");
+
                     b.Navigation("CriteriaAssignments");
 
                     b.Navigation("Solutions");

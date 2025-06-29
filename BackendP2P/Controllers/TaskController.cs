@@ -59,7 +59,7 @@ namespace ApiB.Controllers
                     CreateTime = DateTime.UtcNow,
                     Deadline = taskDto.Deadline,
                     Penalty = taskDto.Penalty == null ? 0.3 : (double)taskDto.Penalty,
-                    SolutionsToCheckN = taskDto.SolutionsToCheckN == null ? 2 : (int)taskDto.SolutionsToCheckN,
+                    SolutionsToCheckN = taskDto.SolutionsToCheckN == null ? 0 : (int)taskDto.SolutionsToCheckN,
                     Check = taskDto.isP2P ? Check.P2P : Check.TeacherOnly,
                     Comments = new List<CommentModel>(),
                     Solutions = new List<SolutionModel>(),

@@ -67,7 +67,7 @@ public class SolutionDistributionService
     }
 
     // 5. Распределение P2P-проверок
-    if (task.Check == Check.P2P && onTimeSolutions.Count >= 2)
+    if (task.Check == Check.P2P && onTimeSolutions.Count >= 2 )
     {
         foreach (var solution in onTimeSolutions)
         {
@@ -84,6 +84,7 @@ public class SolutionDistributionService
             // Если не хватает ревьюеров, переключаемся на проверку преподавателем
             if (availableReviewers.Count < neededChecks)
             {
+                lateSolutions =  solutions;
                 isTeacherCheckRequired = true;
                 break;
             }
@@ -118,17 +119,14 @@ public class SolutionDistributionService
     else
     {
         isTeacherCheckRequired = true;
+        lateSolutions =  solutions;
     }
 
     // 6. Проверка преподавателем (для опоздавших или если P2P невозможно)
     if (isTeacherCheckRequired)
     {
         var solutionsToCheck = lateSolutions;
-        if (isTeacherCheckRequired && task.Check == Check.P2P)
-        {
-            solutionsToCheck = solutions; // Проверяем все решения
-        }
-
+        
         foreach (var solution in solutionsToCheck)
         {
             var assessments = task.CriteriaAssignments
