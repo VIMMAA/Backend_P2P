@@ -131,7 +131,7 @@ namespace ApiB.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MaterialReadModel))]
         [HttpPost("{courseId}/materialRead")]
-        public async Task<IActionResult> CreateMaterialRead([FromBody] MaterialReadCreate materialReadDto, Guid courseId)
+        public async Task<IActionResult> CreateMaterialRead([FromBody] CombinedMaterialReadAndAttachedFiles combinedDto, Guid courseId)
         {
             IActionResult? authResult = AuthenticateService();
             if (authResult != null) return authResult;
@@ -146,6 +146,8 @@ namespace ApiB.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
+                MaterialReadCreate materialReadDto = combinedDto.MaterialReadCreate;
+                List<AttachedFileDto> filesDto = combinedDto.Files;
 
                 MaterialReadModel materialRead = new MaterialReadModel
                 {
@@ -159,6 +161,28 @@ namespace ApiB.Controllers
                     Comments = new List<CommentModel>(),
                     Description = materialReadDto.Description
                 };
+
+                List<AttachedFileModel> attachedFiles = new List<AttachedFileModel>();
+
+                foreach (var file in filesDto)
+                {
+                    AttachedFileModel item = new AttachedFileModel
+                    {
+                        Id = Guid.NewGuid(),
+                        Data = file.Data,
+                        Name = file.Name,
+                        MaterialReadId = materialRead.Id,
+                        ReadModel = materialRead
+                    };
+                    attachedFiles.Add(item);
+                }
+
+                materialRead.AttachedFiles ??= attachedFiles;
+
+                if (filesDto != null)
+                {
+                    await _context.AttachedFiles.AddRangeAsync(attachedFiles);
+                }
 
                 await _context.MaterialReads.AddAsync(materialRead);
                 await _context.SaveChangesAsync();
@@ -181,7 +205,7 @@ namespace ApiB.Controllers
 
             try
             {
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.AttachedFiles).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
@@ -210,7 +234,7 @@ namespace ApiB.Controllers
 
             try
             { 
-                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.Comments).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.Comments).Include(t => t.Author).Include(t => t.Course).Include(t => t.AttachedFiles).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
@@ -242,7 +266,7 @@ namespace ApiB.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
@@ -285,7 +309,7 @@ namespace ApiB.Controllers
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.Comments).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Author).Include(t => t.Course).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                     return NotFound(new { message = "Task not found" });
@@ -322,7 +346,7 @@ namespace ApiB.Controllers
             try
             {
 
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
@@ -358,7 +382,7 @@ namespace ApiB.Controllers
             try
             {
 
-                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialReadModel? task = await _context.MaterialReads.Include(t => t.AttachedFiles).Include(t => t.Comments).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
@@ -392,7 +416,7 @@ namespace ApiB.Controllers
 
             try
             {
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
@@ -447,7 +471,7 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
             try
             {
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
@@ -490,7 +514,7 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
             try
             {
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 if (task == null)
                 {
@@ -543,7 +567,7 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
             try
             {
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
 
@@ -581,7 +605,7 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
             try
             {
-                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                MaterialWorkModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
 
                 IActionResult? httpResult = IsForbid(true, task.CourseId);
 
@@ -624,7 +648,7 @@ namespace ApiB.Controllers
             if (authResult != null) return authResult;
             try
             {
-                TaskModel? task = await _context.MaterialWorks.Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
+                TaskModel? task = await _context.MaterialWorks.Include(t => t.AttachedFiles).Include(t => t.Comments).Include(t => t.Solutions).Include(t => t.CriteriaAssignments).ThenInclude(t => t.GradeModel).FirstOrDefaultAsync(t => t.Id == taskId);
                 WorkOrRead answer = WorkOrRead.Work;
 
                 if (task == null)
