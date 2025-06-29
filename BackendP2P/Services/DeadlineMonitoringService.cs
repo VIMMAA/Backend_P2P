@@ -9,14 +9,12 @@ public class DeadlineProcessingService : BackgroundService
     private readonly ILogger<DeadlineProcessingService> _logger;
     private readonly TimeSpan _checkInterval = TimeSpan.FromSeconds(10);
 
-    private readonly ApplicationContext _context;
 
 
-    public DeadlineProcessingService(ApplicationContext context, IServiceProvider services, ILogger<DeadlineProcessingService> logger)
+    public DeadlineProcessingService( IServiceProvider services, ILogger<DeadlineProcessingService> logger)
     {
         _services = services;
         _logger = logger;
-        _context = context;
 
     }
 
@@ -41,6 +39,7 @@ public class DeadlineProcessingService : BackgroundService
 
     private async Task ProcessExpiredDeadlines(ApplicationContext context)
     {
+
         var now = DateTime.UtcNow;
         var expiredPackages = await context.PackageChecks
             .Where(p => !p.IsProcessed && p.Deadline <= now && p.IsTeacher == false)
@@ -55,6 +54,7 @@ public class DeadlineProcessingService : BackgroundService
         {
             try
             {
+                Console.WriteLine("22822 82282282.     282282 2822822 8228");
                 await CalculateAndSaveFinalGrades(context, package);
                 package.IsProcessed = true;
                 await context.SaveChangesAsync();
@@ -102,10 +102,10 @@ public class DeadlineProcessingService : BackgroundService
             }
             var fin = (int)Math.Round(sum, MidpointRounding.AwayFromZero);
 
-            bool isAllChecked = !_context.SolutionForChecks
+            bool isAllChecked = !context.SolutionForChecks
                 .Any(s => s.AuthortId == solution.StudentId && !s.IsChecked);
 
-            var task = _context.MaterialWorks.FirstOrDefault(t => t.Id == solution.TaskId);
+            var task = context.MaterialWorks.FirstOrDefault(t => t.Id == solution.TaskId);
 
             GradeModel grade = new GradeModel
             {
@@ -116,7 +116,7 @@ public class DeadlineProcessingService : BackgroundService
                 Remark = "",
             };
 
-            _context.Grades.Add(grade);
+            context.Grades.Add(grade);
         }
 
         await context.SaveChangesAsync();
