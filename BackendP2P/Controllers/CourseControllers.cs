@@ -492,7 +492,7 @@ public class CourseController : ControllerBase
     
     [HttpGet("{courseId}/user/{userId} ")]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<List<PackageCheckModel>>>> GetMyChecks(Guid courseId, Guid userId)
+    public async Task<ActionResult<IEnumerable<List<GradeShortModel>>>> GetMyChecks(Guid courseId, Guid userId)
     {
         var tasks = await _context.MaterialWorks
             .Where(t => t.CourseId == courseId)
