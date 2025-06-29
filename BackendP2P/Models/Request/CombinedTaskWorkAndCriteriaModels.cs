@@ -4,5 +4,6 @@
     {
         public TaskWorkCreateModel MaterialTaskWork { get; set; }
         public List<CriteriaAssignmentCreateModel> CriteriaAssignments { get; set; }
+        public List<AttachedFileDto>? Files { get; set; }
     }
 }

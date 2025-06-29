@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendP2P.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250629061857_filetotask")]
+    partial class filetotask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,22 +70,17 @@ namespace BackendP2P.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("ReadModelId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid?>("SolutionId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("WorkModelId")
+                    b.Property<Guid?>("TaskModelId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReadModelId");
-
                     b.HasIndex("SolutionId");
 
-                    b.HasIndex("WorkModelId");
+                    b.HasIndex("TaskModelId");
 
                     b.ToTable("AttachedFiles");
                 });
@@ -547,23 +545,15 @@ namespace BackendP2P.Migrations
 
             modelBuilder.Entity("Api.Models.AttachedFileModel", b =>
                 {
-                    b.HasOne("Domain.Entities.MaterialReadModel", "ReadModel")
-                        .WithMany("AttachedFiles")
-                        .HasForeignKey("ReadModelId");
-
                     b.HasOne("Api.Models.SolutionModel", "Solution")
                         .WithMany("AttachedFiles")
                         .HasForeignKey("SolutionId");
 
-                    b.HasOne("Domain.Entities.MaterialWorkModel", "WorkModel")
+                    b.HasOne("Api.Models.TaskModel", null)
                         .WithMany("AttachedFiles")
-                        .HasForeignKey("WorkModelId");
-
-                    b.Navigation("ReadModel");
+                        .HasForeignKey("TaskModelId");
 
                     b.Navigation("Solution");
-
-                    b.Navigation("WorkModel");
                 });
 
             modelBuilder.Entity("Api.Models.CommentModel", b =>
@@ -766,6 +756,8 @@ namespace BackendP2P.Migrations
 
             modelBuilder.Entity("Api.Models.TaskModel", b =>
                 {
+                    b.Navigation("AttachedFiles");
+
                     b.Navigation("Comments");
                 });
 
@@ -775,15 +767,8 @@ namespace BackendP2P.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.MaterialReadModel", b =>
-                {
-                    b.Navigation("AttachedFiles");
-                });
-
             modelBuilder.Entity("Domain.Entities.MaterialWorkModel", b =>
                 {
-                    b.Navigation("AttachedFiles");
-
                     b.Navigation("CriteriaAssignments");
 
                     b.Navigation("Solutions");

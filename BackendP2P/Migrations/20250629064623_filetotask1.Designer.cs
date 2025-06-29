@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BackendP2P.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250629064623_filetotask1")]
+    partial class filetotask1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,13 +70,13 @@ namespace BackendP2P.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("ReadModelId")
+                    b.Property<Guid>("ReadModelId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("SolutionId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("WorkModelId")
+                    b.Property<Guid>("WorkModelId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -549,7 +552,9 @@ namespace BackendP2P.Migrations
                 {
                     b.HasOne("Domain.Entities.MaterialReadModel", "ReadModel")
                         .WithMany("AttachedFiles")
-                        .HasForeignKey("ReadModelId");
+                        .HasForeignKey("ReadModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Api.Models.SolutionModel", "Solution")
                         .WithMany("AttachedFiles")
@@ -557,7 +562,9 @@ namespace BackendP2P.Migrations
 
                     b.HasOne("Domain.Entities.MaterialWorkModel", "WorkModel")
                         .WithMany("AttachedFiles")
-                        .HasForeignKey("WorkModelId");
+                        .HasForeignKey("WorkModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ReadModel");
 

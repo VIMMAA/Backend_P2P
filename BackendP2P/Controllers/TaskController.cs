@@ -46,6 +46,7 @@ namespace ApiB.Controllers
 
                 TaskWorkCreateModel taskDto = combinedDto.MaterialTaskWork;
                 List<CriteriaAssignmentCreateModel> criteriaDtos = combinedDto.CriteriaAssignments;
+                List<AttachedFileDto> filesDto = combinedDto.Files;
 
                 MaterialWorkModel task = new MaterialWorkModel
                 {
@@ -90,6 +91,28 @@ namespace ApiB.Controllers
                 if (task.Deadline < DateTime.UtcNow)
                 {
                     return BadRequest("Deadline is outdated");
+                }
+
+                List<AttachedFileModel> attachedFiles = new List<AttachedFileModel>();
+
+                foreach (var file in filesDto)
+                {
+                    AttachedFileModel item = new AttachedFileModel
+                    {
+                        Id = Guid.NewGuid(),
+                        Data = file.Data,
+                        Name = file.Name,
+                        MaterialWorkId = task.Id,
+                        WorkModel = task
+                    };
+                    attachedFiles.Add(item);
+                }
+
+                task.AttachedFiles ??= attachedFiles;
+
+                if (filesDto != null)
+                {
+                    await _context.AttachedFiles.AddRangeAsync(attachedFiles);
                 }
 
                 await _context.MaterialWorks.AddAsync(task);
@@ -593,7 +616,6 @@ namespace ApiB.Controllers
                 return StatusCode(500, new { Status = "error", Message = "SWAGA" });
             }
         }
-
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(WorkOrRead))]
         [HttpGet("{taskId}/CheckType")]
         public async Task<IActionResult> GetTypeTask(Guid taskId)

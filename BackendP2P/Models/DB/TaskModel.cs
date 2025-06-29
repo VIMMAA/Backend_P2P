@@ -21,4 +21,5 @@ public abstract class TaskModel : Entity
     public CourseModel? Course { get; set; }
 
     public List<CommentModel>? Comments { get; set; }
+    public List<AttachedFileModel>? AttachedFiles { get; set; }
 }
