@@ -178,7 +178,6 @@ namespace MyApi.MapControllers
         }
 
 
-       [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize]
         [HttpGet("solution/{solutionId}")]
 
